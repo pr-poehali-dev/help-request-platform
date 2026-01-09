@@ -83,14 +83,25 @@ const Index = () => {
         type: newAnnouncement.type
       });
 
-      toast({
-        title: 'Объявление создано!',
-        description: `Оплачено: ${result.amount}₽`
-      });
-
-      setNewAnnouncement({ title: '', description: '', category: '', author_contact: '', type: 'regular' });
-      setActiveTab('all');
-      await loadAnnouncements();
+      if (result.confirmation_url) {
+        window.location.href = result.confirmation_url;
+      } else if (result.test_mode) {
+        toast({
+          title: 'Тестовый режим',
+          description: 'Объявление создано без оплаты (добавьте ключи ЮKassa для реальных платежей)'
+        });
+        setNewAnnouncement({ title: '', description: '', category: '', author_contact: '', type: 'regular' });
+        setActiveTab('all');
+        await loadAnnouncements();
+      } else {
+        toast({
+          title: 'Объявление создано!',
+          description: `Сумма: ${result.amount}₽`
+        });
+        setNewAnnouncement({ title: '', description: '', category: '', author_contact: '', type: 'regular' });
+        setActiveTab('all');
+        await loadAnnouncements();
+      }
     } catch (error) {
       toast({
         title: 'Ошибка',

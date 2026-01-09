@@ -63,11 +63,23 @@ export const paymentsApi = {
     author_name: string;
     author_contact: string;
     type: 'regular' | 'boosted' | 'vip';
-  }): Promise<{ success: boolean; announcement_id: number; amount: number }> {
+  }): Promise<{ 
+    success: boolean; 
+    announcement_id: number; 
+    amount: number;
+    payment_id?: string;
+    confirmation_url?: string;
+    payment_status: string;
+    test_mode?: boolean;
+  }> {
     const response = await fetch(API_URLS.payments, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'create_payment', ...data })
+      body: JSON.stringify({ 
+        action: 'create_payment', 
+        return_url: window.location.origin,
+        ...data 
+      })
     });
     if (!response.ok) throw new Error('Failed to create payment');
     return response.json();
@@ -81,6 +93,14 @@ export const paymentsApi = {
     });
     if (!response.ok) throw new Error('Failed to check payment');
     return response.json();
+  },
+
+  isPaid(status: string): boolean {
+    return status === 'paid';
+  },
+
+  isPending(status: string): boolean {
+    return status === 'pending';
   }
 };
 

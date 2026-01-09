@@ -1,0 +1,40 @@
+{
+  "tests": [
+    {
+      "name": "Create payment for regular announcement",
+      "method": "POST",
+      "body": {
+        "action": "create_payment",
+        "title": "Test announcement",
+        "description": "Test description",
+        "category": "Test",
+        "author_name": "Test User",
+        "author_contact": "test@example.com",
+        "type": "regular"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "amount": 10,
+        "payment_status": "paid"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create VIP announcement with higher price",
+      "method": "POST",
+      "body": {
+        "action": "create_payment",
+        "title": "VIP announcement",
+        "description": "VIP description",
+        "type": "vip"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "amount": 100
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

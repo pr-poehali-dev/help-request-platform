@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,58 +7,52 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
 import { toast } from '@/hooks/use-toast';
+import { announcementsApi, paymentsApi, type Announcement } from '@/lib/api';
+import { ResponseDialog } from '@/components/ResponseDialog';
+import { ResponsesDialog } from '@/components/ResponsesDialog';
 
-interface Announcement {
-  id: number;
-  title: string;
-  description: string;
-  category: string;
-  author: string;
-  date: string;
-  type: 'regular' | 'boosted' | 'vip';
-  image?: string;
-}
+const CURRENT_USER = 'Вы';
 
 const Index = () => {
-  const [announcements, setAnnouncements] = useState<Announcement[]>([
-    {
-      id: 1,
-      title: 'Нужна помощь с ремонтом крыши',
-      description: 'После урагана повредило кровлю на доме. Нужны специалисты или материалы для починки.',
-      category: 'Строительство',
-      author: 'Мария К.',
-      date: '2 часа назад',
-      type: 'vip'
-    },
-    {
-      id: 2,
-      title: 'Ищу репетитора по математике',
-      description: 'Нужна помощь ребенку 7 класс, подготовка к контрольной. Желательно опыт работы.',
-      category: 'Образование',
-      author: 'Алексей П.',
-      date: '5 часов назад',
-      type: 'boosted'
-    },
-    {
-      id: 3,
-      title: 'Помогите с переездом',
-      description: 'Переезжаю в новую квартиру, нужна помощь с погрузкой мебели. Есть грузовик.',
-      category: 'Быт',
-      author: 'Дмитрий Л.',
-      date: '1 день назад',
-      type: 'regular'
-    }
-  ]);
-
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
   const [newAnnouncement, setNewAnnouncement] = useState({
     title: '',
     description: '',
     category: '',
+    author_contact: '',
     type: 'regular' as 'regular' | 'boosted' | 'vip'
   });
+  const [responseDialog, setResponseDialog] = useState<{ open: boolean; announcementId: number; title: string }>({
+    open: false,
+    announcementId: 0,
+    title: ''
+  });
+  const [responsesDialog, setResponsesDialog] = useState<{ open: boolean; announcementId: number; title: string; isAuthor: boolean }>({
+    open: false,
+    announcementId: 0,
+    title: '',
+    isAuthor: false
+  });
 
-  const handleCreate = () => {
+  useEffect(() => {
+    loadAnnouncements();
+  }, []);
+
+  const loadAnnouncements = async () => {
+    setLoading(true);
+    try {
+      const data = await announcementsApi.getAll();
+      setAnnouncements(data);
+    } catch (error) {
+      console.error('Failed to load announcements:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreate = async () => {
     if (!newAnnouncement.title || !newAnnouncement.description) {
       toast({
         title: 'Ошибка',
@@ -68,25 +62,31 @@ const Index = () => {
       return;
     }
 
-    const announcement: Announcement = {
-      id: Date.now(),
-      title: newAnnouncement.title,
-      description: newAnnouncement.description,
-      category: newAnnouncement.category || 'Разное',
-      author: 'Вы',
-      date: 'Только что',
-      type: newAnnouncement.type
-    };
+    try {
+      const result = await paymentsApi.createPayment({
+        title: newAnnouncement.title,
+        description: newAnnouncement.description,
+        category: newAnnouncement.category || 'Разное',
+        author_name: CURRENT_USER,
+        author_contact: newAnnouncement.author_contact,
+        type: newAnnouncement.type
+      });
 
-    setAnnouncements([announcement, ...announcements]);
-    setNewAnnouncement({ title: '', description: '', category: '', type: 'regular' });
-    setActiveTab('all');
-    
-    const prices = { regular: 10, boosted: 20, vip: 100 };
-    toast({
-      title: 'Объявление создано!',
-      description: `К оплате: ${prices[newAnnouncement.type]}₽`
-    });
+      toast({
+        title: 'Объявление создано!',
+        description: `Оплачено: ${result.amount}₽`
+      });
+
+      setNewAnnouncement({ title: '', description: '', category: '', author_contact: '', type: 'regular' });
+      setActiveTab('all');
+      await loadAnnouncements();
+    } catch (error) {
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось создать объявление',
+        variant: 'destructive'
+      });
+    }
   };
 
   const getTypeInfo = (type: string) => {
@@ -98,6 +98,26 @@ const Index = () => {
       default:
         return { label: '', color: '', icon: '' };
     }
+  };
+
+  const openResponseDialog = (id: number, title: string) => {
+    setResponseDialog({ open: true, announcementId: id, title });
+  };
+
+  const openResponsesDialog = (id: number, title: string, isAuthor: boolean) => {
+    setResponsesDialog({ open: true, announcementId: id, title, isAuthor });
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    
+    if (hours < 1) return 'Только что';
+    if (hours < 24) return `${hours} ${hours === 1 ? 'час' : hours < 5 ? 'часа' : 'часов'} назад`;
+    const days = Math.floor(hours / 24);
+    return `${days} ${days === 1 ? 'день' : days < 5 ? 'дня' : 'дней'} назад`;
   };
 
   return (
@@ -144,46 +164,60 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="all" className="animate-fade-in">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {announcements.map((item) => {
-                const typeInfo = getTypeInfo(item.type);
-                return (
-                  <Card 
-                    key={item.id} 
-                    className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-2 animate-scale-in"
-                  >
-                    <CardHeader>
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <CardTitle className="text-lg leading-tight">{item.title}</CardTitle>
-                        {typeInfo.label && (
-                          <Badge className={typeInfo.color}>
-                            <Icon name={typeInfo.icon as any} size={14} className="mr-1" />
-                            {typeInfo.label}
+            {loading ? (
+              <div className="text-center py-12 text-muted-foreground">Загрузка объявлений...</div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {announcements.map((item) => {
+                  const typeInfo = getTypeInfo(item.type);
+                  const isAuthor = item.author === CURRENT_USER;
+                  return (
+                    <Card 
+                      key={item.id} 
+                      className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-2 animate-scale-in"
+                    >
+                      <CardHeader>
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <CardTitle className="text-lg leading-tight">{item.title}</CardTitle>
+                          {typeInfo.label && (
+                            <Badge className={typeInfo.color}>
+                              <Icon name={typeInfo.icon as any} size={14} className="mr-1" />
+                              {typeInfo.label}
+                            </Badge>
+                          )}
+                        </div>
+                        <CardDescription className="flex items-center gap-2 text-xs">
+                          <Icon name="User" size={14} />
+                          {item.author} • {formatDate(item.date)}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-muted-foreground mb-4">{item.description}</p>
+                        <div className="flex items-center justify-between gap-2">
+                          <Badge variant="outline" className="bg-accent/50">
+                            <Icon name="Tag" size={12} className="mr-1" />
+                            {item.category}
                           </Badge>
-                        )}
-                      </div>
-                      <CardDescription className="flex items-center gap-2 text-xs">
-                        <Icon name="User" size={14} />
-                        {item.author} • {item.date}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-4">{item.description}</p>
-                      <div className="flex items-center justify-between">
-                        <Badge variant="outline" className="bg-accent/50">
-                          <Icon name="Tag" size={12} className="mr-1" />
-                          {item.category}
-                        </Badge>
-                        <Button size="sm" variant="ghost">
-                          <Icon name="MessageCircle" size={16} className="mr-1" />
-                          Откликнуться
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+                          <div className="flex gap-2">
+                            {isAuthor ? (
+                              <Button size="sm" variant="ghost" onClick={() => openResponsesDialog(item.id, item.title, true)}>
+                                <Icon name="MessageCircle" size={16} className="mr-1" />
+                                Отклики
+                              </Button>
+                            ) : (
+                              <Button size="sm" variant="ghost" onClick={() => openResponseDialog(item.id, item.title)}>
+                                <Icon name="MessageCircle" size={16} className="mr-1" />
+                                Откликнуться
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="my" className="animate-fade-in">
@@ -194,9 +228,9 @@ const Index = () => {
                   <CardDescription>Объявления, которые вы разместили</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {announcements.filter(a => a.author === 'Вы').length > 0 ? (
+                  {announcements.filter(a => a.author === CURRENT_USER).length > 0 ? (
                     <div className="space-y-4">
-                      {announcements.filter(a => a.author === 'Вы').map((item) => (
+                      {announcements.filter(a => a.author === CURRENT_USER).map((item) => (
                         <Card key={item.id}>
                           <CardHeader>
                             <CardTitle className="text-base">{item.title}</CardTitle>
@@ -204,13 +238,9 @@ const Index = () => {
                           <CardContent>
                             <p className="text-sm text-muted-foreground mb-3">{item.description}</p>
                             <div className="flex gap-2">
-                              <Button size="sm" variant="outline">
-                                <Icon name="Edit" size={14} className="mr-1" />
-                                Редактировать
-                              </Button>
-                              <Button size="sm" variant="outline">
-                                <Icon name="Trash2" size={14} className="mr-1" />
-                                Удалить
+                              <Button size="sm" variant="outline" onClick={() => openResponsesDialog(item.id, item.title, true)}>
+                                <Icon name="MessageCircle" size={14} className="mr-1" />
+                                Посмотреть отклики
                               </Button>
                             </div>
                           </CardContent>
@@ -261,6 +291,15 @@ const Index = () => {
                       placeholder="Например: Быт, Образование, Здоровье"
                       value={newAnnouncement.category}
                       onChange={(e) => setNewAnnouncement({...newAnnouncement, category: e.target.value})}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Контакт для связи</label>
+                    <Input 
+                      placeholder="Телефон, email или telegram"
+                      value={newAnnouncement.author_contact}
+                      onChange={(e) => setNewAnnouncement({...newAnnouncement, author_contact: e.target.value})}
                     />
                   </div>
 
@@ -356,6 +395,21 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      <ResponseDialog
+        open={responseDialog.open}
+        onOpenChange={(open) => setResponseDialog({ ...responseDialog, open })}
+        announcementId={responseDialog.announcementId}
+        announcementTitle={responseDialog.title}
+      />
+
+      <ResponsesDialog
+        open={responsesDialog.open}
+        onOpenChange={(open) => setResponsesDialog({ ...responsesDialog, open })}
+        announcementId={responsesDialog.announcementId}
+        announcementTitle={responsesDialog.title}
+        isAuthor={responsesDialog.isAuthor}
+      />
     </div>
   );
 };

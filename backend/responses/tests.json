@@ -1,0 +1,20 @@
+{
+  "tests": [
+    {
+      "name": "Create response to announcement",
+      "method": "POST",
+      "body": {
+        "action": "create_response",
+        "announcement_id": 1,
+        "responder_name": "Helper User",
+        "responder_contact": "helper@example.com",
+        "message": "I can help with this"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

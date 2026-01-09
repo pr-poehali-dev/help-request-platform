@@ -13,10 +13,21 @@ import { ResponsesDialog } from '@/components/ResponsesDialog';
 
 const CURRENT_USER = 'Вы';
 
+const CATEGORIES = [
+  { value: 'all', label: 'Все категории', icon: 'Grid3x3' },
+  { value: 'Строительство', label: 'Строительство', icon: 'Hammer' },
+  { value: 'Образование', label: 'Образование', icon: 'GraduationCap' },
+  { value: 'Быт', label: 'Быт', icon: 'Home' },
+  { value: 'Здоровье', label: 'Здоровье', icon: 'Heart' },
+  { value: 'Транспорт', label: 'Транспорт', icon: 'Car' },
+  { value: 'Разное', label: 'Разное', icon: 'Package' }
+];
+
 const Index = () => {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [newAnnouncement, setNewAnnouncement] = useState({
     title: '',
     description: '',
@@ -120,6 +131,10 @@ const Index = () => {
     return `${days} ${days === 1 ? 'день' : days < 5 ? 'дня' : 'дней'} назад`;
   };
 
+  const filteredAnnouncements = selectedCategory === 'all' 
+    ? announcements 
+    : announcements.filter(a => a.category === selectedCategory);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary/30 via-background to-accent/20">
       <header className="bg-white/80 backdrop-blur-sm border-b border-border sticky top-0 z-50 shadow-sm">
@@ -164,11 +179,40 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="all" className="animate-fade-in">
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Icon name="Filter" size={20} className="text-muted-foreground" />
+                <h3 className="text-sm font-medium text-muted-foreground">Фильтр по категориям:</h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {CATEGORIES.map((cat) => (
+                  <Button
+                    key={cat.value}
+                    variant={selectedCategory === cat.value ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedCategory(cat.value)}
+                    className={selectedCategory === cat.value ? 'bg-primary text-white' : ''}
+                  >
+                    <Icon name={cat.icon as any} size={14} className="mr-2" />
+                    {cat.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            
             {loading ? (
               <div className="text-center py-12 text-muted-foreground">Загрузка объявлений...</div>
+            ) : filteredAnnouncements.length === 0 ? (
+              <div className="text-center py-12">
+                <Icon name="SearchX" size={48} className="mx-auto text-muted-foreground mb-4" />
+                <p className="text-muted-foreground">Объявлений в этой категории пока нет</p>
+                <Button variant="outline" className="mt-4" onClick={() => setSelectedCategory('all')}>
+                  Показать все
+                </Button>
+              </div>
             ) : (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {announcements.map((item) => {
+                {filteredAnnouncements.map((item) => {
                   const typeInfo = getTypeInfo(item.type);
                   const isAuthor = item.author === CURRENT_USER;
                   return (
@@ -287,11 +331,21 @@ const Index = () => {
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">Категория</label>
-                    <Input 
-                      placeholder="Например: Быт, Образование, Здоровье"
-                      value={newAnnouncement.category}
-                      onChange={(e) => setNewAnnouncement({...newAnnouncement, category: e.target.value})}
-                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      {CATEGORIES.filter(c => c.value !== 'all').map((cat) => (
+                        <Button
+                          key={cat.value}
+                          type="button"
+                          variant={newAnnouncement.category === cat.value ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setNewAnnouncement({...newAnnouncement, category: cat.value})}
+                          className={`justify-start ${newAnnouncement.category === cat.value ? 'bg-primary text-white' : ''}`}
+                        >
+                          <Icon name={cat.icon as any} size={14} className="mr-2" />
+                          {cat.label}
+                        </Button>
+                      ))}
+                    </div>
                   </div>
 
                   <div>

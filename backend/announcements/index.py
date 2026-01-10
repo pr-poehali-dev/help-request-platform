@@ -33,7 +33,7 @@ def handler(event: dict, context) -> dict:
             filter_type = query_params.get('type')
             author = query_params.get('author')
             
-            query = f"SELECT * FROM {schema}.announcements WHERE status = 'active'"
+            query = f"SELECT * FROM {schema}.announcements WHERE payment_status IN ('paid', 'pending')"
             params = []
             
             if filter_type:
@@ -51,6 +51,12 @@ def handler(event: dict, context) -> dict:
             
             result = []
             for ann in announcements:
+                status_map = {
+                    'paid': 'Опубликовано',
+                    'pending': 'Ожидает оплаты',
+                    'active': 'Активно',
+                    'closed': 'Закрыто'
+                }
                 result.append({
                     'id': ann['id'],
                     'title': ann['title'],
@@ -59,7 +65,7 @@ def handler(event: dict, context) -> dict:
                     'author': ann['author_name'],
                     'date': ann['created_at'].isoformat() if ann['created_at'] else None,
                     'type': ann['type'],
-                    'status': ann['status']
+                    'status': status_map.get(ann.get('payment_status', 'active'), ann.get('status', 'Активно'))
                 })
             
             return {

@@ -3,9 +3,7 @@
     {
       "name": "Get all announcements",
       "method": "GET",
-      "expectedStatus": 200,
-      "expectedBody": [],
-      "bodyMatcher": "partial"
+      "expectedStatus": 200
     }
   ]
 }

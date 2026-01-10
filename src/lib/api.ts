@@ -101,6 +101,16 @@ export const paymentsApi = {
 
   isPending(status: string): boolean {
     return status === 'pending';
+  },
+
+  async confirmPayment(announcement_id: number, admin_code: string): Promise<{ success: boolean }> {
+    const response = await fetch(API_URLS.payments, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'confirm_payment', announcement_id, admin_code })
+    });
+    if (!response.ok) throw new Error('Failed to confirm payment');
+    return response.json();
   }
 };
 

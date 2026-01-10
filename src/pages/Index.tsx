@@ -160,14 +160,23 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">Платформа взаимопомощи</p>
               </div>
             </div>
-            <Button 
-              onClick={() => setActiveTab('create')}
-              className="bg-primary hover:bg-primary/90"
-              size="lg"
-            >
-              <Icon name="Plus" className="mr-2" size={20} />
-              Создать объявление
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                variant="ghost"
+                size="sm"
+                onClick={() => window.location.href = '/admin'}
+              >
+                <Icon name="Shield" size={16} />
+              </Button>
+              <Button 
+                onClick={() => setActiveTab('create')}
+                className="bg-primary hover:bg-primary/90"
+                size="lg"
+              >
+                <Icon name="Plus" className="mr-2" size={20} />
+                Создать объявление
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -248,11 +257,19 @@ const Index = () => {
                       </CardHeader>
                       <CardContent>
                         <p className="text-sm text-muted-foreground mb-4">{item.description}</p>
-                        <div className="flex items-center justify-between gap-2">
-                          <Badge variant="outline" className="bg-accent/50">
-                            <Icon name="Tag" size={12} className="mr-1" />
-                            {item.category}
-                          </Badge>
+                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                          <div className="flex gap-2">
+                            <Badge variant="outline" className="bg-accent/50">
+                              <Icon name="Tag" size={12} className="mr-1" />
+                              {item.category}
+                            </Badge>
+                            {item.status === 'Ожидает оплаты' && (
+                              <Badge variant="outline" className="bg-warning/20 text-warning-foreground border-warning">
+                                <Icon name="Clock" size={12} className="mr-1" />
+                                {item.status}
+                              </Badge>
+                            )}
+                          </div>
                           <div className="flex gap-2">
                             {isAuthor ? (
                               <Button size="sm" variant="ghost" onClick={() => openResponsesDialog(item.id, item.title, true)}>

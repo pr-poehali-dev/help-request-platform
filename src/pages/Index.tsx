@@ -334,8 +334,20 @@ const Index = () => {
             <div className="max-w-2xl mx-auto">
               <Card>
                 <CardHeader>
-                  <CardTitle>Создать объявление</CardTitle>
-                  <CardDescription>Расскажите, какая помощь вам нужна</CardDescription>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <CardTitle>Создать объявление</CardTitle>
+                      <CardDescription>Расскажите, какая помощь вам нужна</CardDescription>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => window.location.href = '/payment-guide'}
+                    >
+                      <Icon name="HelpCircle" size={16} className="mr-1" />
+                      Как оплатить?
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
@@ -474,6 +486,17 @@ const Index = () => {
               <h3 className="font-semibold text-lg mb-2">Быстро</h3>
               <p className="text-sm text-muted-foreground">Помощь приходит когда нужна</p>
             </div>
+          </div>
+          
+          <div className="mt-12 text-center">
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={() => window.location.href = '/payment-guide'}
+            >
+              <Icon name="HelpCircle" className="mr-2" size={20} />
+              Как разместить объявление и оплатить?
+            </Button>
           </div>
         </div>
       </section>

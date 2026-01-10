@@ -1,7 +1,7 @@
 {
   "tests": [
     {
-      "name": "Create payment for regular announcement",
+      "name": "Create payment with ЮMoney",
       "method": "POST",
       "body": {
         "action": "create_payment",
@@ -16,12 +16,12 @@
       "expectedBody": {
         "success": true,
         "amount": 10,
-        "payment_status": "paid"
+        "yoomoney_card": "4100119447434780"
       },
       "bodyMatcher": "partial"
     },
     {
-      "name": "Create VIP announcement with higher price",
+      "name": "Create VIP announcement",
       "method": "POST",
       "body": {
         "action": "create_payment",

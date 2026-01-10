@@ -83,12 +83,12 @@ const Index = () => {
         type: newAnnouncement.type
       });
 
-      if (result.confirmation_url) {
-        window.location.href = result.confirmation_url;
-      } else if (result.test_mode) {
+      if (result.payment_url) {
+        window.open(result.payment_url, '_blank');
         toast({
-          title: 'Тестовый режим',
-          description: 'Объявление создано без оплаты (добавьте ключи ЮKassa для реальных платежей)'
+          title: 'Инструкция по оплате',
+          description: `Переведите ${result.amount}₽ на карту ЮMoney ${result.yoomoney_card}. После оплаты напишите администратору для подтверждения.`,
+          duration: 10000
         });
         setNewAnnouncement({ title: '', description: '', category: '', author_contact: '', type: 'regular' });
         setActiveTab('all');

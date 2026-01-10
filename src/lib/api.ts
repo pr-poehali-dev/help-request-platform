@@ -67,10 +67,10 @@ export const paymentsApi = {
     success: boolean; 
     announcement_id: number; 
     amount: number;
-    payment_id?: string;
-    confirmation_url?: string;
+    payment_url?: string;
+    yoomoney_card?: string;
     payment_status: string;
-    test_mode?: boolean;
+    message?: string;
   }> {
     const response = await fetch(API_URLS.payments, {
       method: 'POST',

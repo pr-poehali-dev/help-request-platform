@@ -49,6 +49,7 @@ const Index = () => {
 
   useEffect(() => {
     loadAnnouncements();
+    announcementsApi.trackVisit();
   }, []);
 
   const loadAnnouncements = async () => {
@@ -254,6 +255,10 @@ const Index = () => {
                           <Icon name="User" size={14} />
                           {item.author} • {formatDate(item.date)}
                         </CardDescription>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                          <Icon name="Eye" size={14} />
+                          <span>{item.views || 0} просмотров</span>
+                        </div>
                       </CardHeader>
                       <CardContent>
                         <p className="text-sm text-muted-foreground mb-4">{item.description}</p>

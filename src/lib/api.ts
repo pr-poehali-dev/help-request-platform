@@ -13,6 +13,7 @@ export interface Announcement {
   date: string;
   type: 'regular' | 'boosted' | 'vip';
   status: string;
+  views: number;
 }
 
 export interface Response {
@@ -36,6 +37,33 @@ export const announcementsApi = {
   async getAll(): Promise<Announcement[]> {
     const response = await fetch(API_URLS.announcements);
     if (!response.ok) throw new Error('Failed to fetch announcements');
+    return response.json();
+  },
+
+  async trackView(id: number): Promise<void> {
+    await fetch(`${API_URLS.announcements}?id=${id}&track_view=1`);
+  },
+
+  async trackVisit(): Promise<void> {
+    await fetch(API_URLS.announcements, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'track_visit' })
+    });
+  },
+
+  async getStats(admin_code: string): Promise<{
+    total_visits: number;
+    unique_visitors: number;
+    today_visits: number;
+    total_announcement_views: number;
+  }> {
+    const response = await fetch(API_URLS.announcements, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'get_stats', admin_code })
+    });
+    if (!response.ok) throw new Error('Failed to fetch stats');
     return response.json();
   },
 

@@ -12,17 +12,33 @@ const Admin = () => {
   const [password, setPassword] = useState('');
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({
+    total_visits: 0,
+    unique_visitors: 0,
+    today_visits: 0,
+    total_announcement_views: 0
+  });
 
   const handleLogin = () => {
     if (password === 'HELP2025') {
       setIsAuthorized(true);
       loadPendingAnnouncements();
+      loadStats();
     } else {
       toast({
         title: 'Ошибка',
         description: 'Неверный пароль',
         variant: 'destructive'
       });
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const data = await announcementsApi.getStats('HELP2025');
+      setStats(data);
+    } catch (error) {
+      console.error('Ошибка загрузки статистики:', error);
     }
   };
 
@@ -95,6 +111,56 @@ const Admin = () => {
             <Icon name="LogOut" size={18} />
             Выйти
           </Button>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-4 mb-6">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Icon name="Users" size={18} />
+                Всего посещений
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.total_visits}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Icon name="UserCheck" size={18} />
+                Уникальных посетителей
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.unique_visitors}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Icon name="CalendarDays" size={18} />
+                Посещений сегодня
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.today_visits}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Icon name="Eye" size={18} />
+                Просмотров объявлений
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.total_announcement_views}</div>
+            </CardContent>
+          </Card>
         </div>
 
         <Card>

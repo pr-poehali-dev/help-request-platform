@@ -151,7 +151,7 @@ const PaymentGuide = () => {
                 <div className="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
                   3
                 </div>
-                Оплатите через ЮMoney
+                Оплатите через Яндекс
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -163,7 +163,7 @@ const PaymentGuide = () => {
                 <div className="flex items-center gap-3 mb-3">
                   <Icon name="CreditCard" size={32} className="text-primary" />
                   <div>
-                    <div className="font-semibold">Номер карты ЮMoney:</div>
+                    <div className="font-semibold">Номер карты Яндекс:</div>
                     <div className="text-2xl font-mono text-primary">2204 3113 1583 9002</div>
                   </div>
                 </div>
@@ -180,7 +180,7 @@ const PaymentGuide = () => {
                     <div>
                       <div className="font-medium">С телефона</div>
                       <div className="text-sm text-muted-foreground">
-                        Откроется приложение ЮMoney для перевода
+                        Откроется приложение Яндекс для перевода
                       </div>
                     </div>
                   </div>
@@ -189,7 +189,7 @@ const PaymentGuide = () => {
                     <div>
                       <div className="font-medium">С компьютера</div>
                       <div className="text-sm text-muted-foreground">
-                        Переведите на карту через сайт yoomoney.ru
+                        Переведите на карту через Яндекс.Pay
                       </div>
                     </div>
                   </div>

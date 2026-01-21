@@ -16,7 +16,7 @@
       "expectedBody": {
         "success": true,
         "amount": 10,
-        "yoomoney_card": "2204311315839002",
+        "yandex_card": "2204311315839002",
         "payment_status": "paid"
       },
       "bodyMatcher": "partial"

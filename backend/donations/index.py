@@ -137,8 +137,8 @@ def handler(event: dict, context) -> dict:
                     f"ID пожертвования: {donation_id}"
                 )
                 
-                yoomoney_card = '2204311315839002'
-                payment_url = f'https://yoomoney.ru/to/{yoomoney_card}/{amount}'
+                yandex_card = '2204311315839002'
+                payment_url = f'https://yoomoney.ru/to/{yandex_card}/{amount}'
                 
                 return {
                     'statusCode': 200,
@@ -150,8 +150,8 @@ def handler(event: dict, context) -> dict:
                         'success': True,
                         'donation_id': donation_id,
                         'payment_url': payment_url,
-                        'yoomoney_card': yoomoney_card,
-                        'message': f'Спасибо за поддержку! Переведите {amount}₽ на карту {yoomoney_card}'
+                        'yandex_card': yandex_card,
+                        'message': f'Спасибо за поддержку! Переведите {amount}₽ на карту Яндекс {yandex_card}'
                     }),
                     'isBase64Encoded': False
                 }

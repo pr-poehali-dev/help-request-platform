@@ -22,8 +22,8 @@ def send_telegram_notification(message: str):
 
 def handler(event: dict, context) -> dict:
     """
-    API для приема платежей через ЮMoney.
-    Создаёт объявление и показывает инструкцию для оплаты на карту ЮMoney.
+    API для приема платежей через Яндекс.
+    Создаёт объявление и показывает инструкцию для оплаты на карту Яндекс.
     """
     method = event.get('httpMethod', 'GET')
     
@@ -85,8 +85,8 @@ def handler(event: dict, context) -> dict:
                     f"ID объявления: {announcement_id}"
                 )
                 
-                yoomoney_card = '2204311315839002'
-                payment_url = f'https://yoomoney.ru/to/{yoomoney_card}/{amount}'
+                yandex_card = '2204311315839002'
+                payment_url = f'https://yoomoney.ru/to/{yandex_card}/{amount}'
                 
                 return {
                     'statusCode': 200,
@@ -99,9 +99,9 @@ def handler(event: dict, context) -> dict:
                         'announcement_id': announcement_id,
                         'amount': amount,
                         'payment_url': payment_url,
-                        'yoomoney_card': yoomoney_card,
+                        'yandex_card': yandex_card,
                         'payment_status': 'paid',
-                        'message': f'Объявление создано и опубликовано! Переведите {amount}₽ на карту {yoomoney_card}'
+                        'message': f'Объявление создано и опубликовано! Переведите {amount}₽ на карту Яндекс {yandex_card}'
                     }),
                     'isBase64Encoded': False
                 }

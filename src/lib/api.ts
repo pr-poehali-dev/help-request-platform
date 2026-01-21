@@ -98,7 +98,7 @@ export const paymentsApi = {
     announcement_id: number; 
     amount: number;
     payment_url?: string;
-    yoomoney_card?: string;
+    yandex_card?: string;
     payment_status: string;
     message?: string;
   }> {
@@ -218,7 +218,7 @@ export const donationsApi = {
     success: boolean;
     donation_id: number;
     payment_url: string;
-    yoomoney_card: string;
+    yandex_card: string;
   }> {
     const response = await fetch(API_URLS.donations, {
       method: 'POST',

@@ -1,0 +1,25 @@
+{
+  "tests": [
+    {
+      "name": "Create donation",
+      "method": "POST",
+      "body": {
+        "action": "create_donation",
+        "donor_name": "Иван Иванов",
+        "donor_contact": "ivan@example.com",
+        "amount": 500,
+        "message": "На развитие проекта"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get public donations",
+      "method": "GET",
+      "expectedStatus": 200
+    }
+  ]
+}

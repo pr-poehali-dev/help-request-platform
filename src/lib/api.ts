@@ -1,7 +1,9 @@
 const API_URLS = {
   announcements: 'https://functions.poehali.dev/b1e181c0-55b3-4324-acd5-0006dbf5513b',
   responses: 'https://functions.poehali.dev/76351e81-d861-498b-a2a8-e7aed5a2df02',
-  payments: 'https://functions.poehali.dev/df01d173-dc03-4599-89e8-ad9b742e4b60'
+  payments: 'https://functions.poehali.dev/df01d173-dc03-4599-89e8-ad9b742e4b60',
+  donations: 'https://functions.poehali.dev/b466acd0-0691-4e63-8c9d-9eacbd7dbefb',
+  celebrities: 'https://functions.poehali.dev/c68b9bfa-7cd0-4dcf-bb6d-56adfb2ac06b'
 };
 
 export interface Announcement {
@@ -181,6 +183,106 @@ export const responsesApi = {
       body: JSON.stringify({ action: 'send_message', ...data })
     });
     if (!response.ok) throw new Error('Failed to send message');
+    return response.json();
+  }
+};
+
+export interface Donation {
+  id: number;
+  donor_name: string;
+  donor_contact?: string;
+  amount: number;
+  message: string;
+  payment_status: string;
+  assigned_to?: string;
+  admin_notes?: string;
+  created_at: string;
+}
+
+export const donationsApi = {
+  async getAll(admin_code?: string): Promise<Donation[]> {
+    const url = admin_code 
+      ? `${API_URLS.donations}?admin_code=${admin_code}`
+      : API_URLS.donations;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to fetch donations');
+    return response.json();
+  },
+
+  async createDonation(data: {
+    donor_name: string;
+    donor_contact: string;
+    amount: number;
+    message: string;
+  }): Promise<{
+    success: boolean;
+    donation_id: number;
+    payment_url: string;
+    yoomoney_card: string;
+  }> {
+    const response = await fetch(API_URLS.donations, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'create_donation', ...data })
+    });
+    if (!response.ok) throw new Error('Failed to create donation');
+    return response.json();
+  },
+
+  async assignDonation(donation_id: number, assigned_to: string, admin_notes: string, admin_code: string): Promise<{ success: boolean }> {
+    const response = await fetch(API_URLS.donations, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'assign_donation', donation_id, assigned_to, admin_notes, admin_code })
+    });
+    if (!response.ok) throw new Error('Failed to assign donation');
+    return response.json();
+  }
+};
+
+export interface CelebrityRequest {
+  id: number;
+  requester_name: string;
+  requester_contact?: string;
+  celebrity_name: string;
+  request_text: string;
+  status: string;
+  admin_notes?: string;
+  created_at: string;
+}
+
+export const celebritiesApi = {
+  async getAll(admin_code?: string): Promise<CelebrityRequest[]> {
+    const url = admin_code
+      ? `${API_URLS.celebrities}?admin_code=${admin_code}`
+      : API_URLS.celebrities;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to fetch celebrity requests');
+    return response.json();
+  },
+
+  async createRequest(data: {
+    requester_name: string;
+    requester_contact: string;
+    celebrity_name: string;
+    request_text: string;
+  }): Promise<{ success: boolean; request_id: number; message: string }> {
+    const response = await fetch(API_URLS.celebrities, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'create_request', ...data })
+    });
+    if (!response.ok) throw new Error('Failed to create request');
+    return response.json();
+  },
+
+  async updateStatus(request_id: number, status: string, admin_notes: string, admin_code: string): Promise<{ success: boolean }> {
+    const response = await fetch(API_URLS.celebrities, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'update_status', request_id, status, admin_notes, admin_code })
+    });
+    if (!response.ok) throw new Error('Failed to update status');
     return response.json();
   }
 };

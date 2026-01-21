@@ -5,12 +5,16 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { toast } from '@/hooks/use-toast';
-import { announcementsApi, paymentsApi, type Announcement } from '@/lib/api';
+import { announcementsApi, paymentsApi, donationsApi, celebritiesApi, type Announcement, type Donation, type CelebrityRequest } from '@/lib/api';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 
 const Admin = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [password, setPassword] = useState('');
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [donations, setDonations] = useState<Donation[]>([]);
+  const [celebrityRequests, setCelebrityRequests] = useState<CelebrityRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState({
     total_visits: 0,
@@ -18,12 +22,16 @@ const Admin = () => {
     today_visits: 0,
     total_announcement_views: 0
   });
+  const [editingDonation, setEditingDonation] = useState<{ id: number; assigned_to: string; notes: string } | null>(null);
+  const [editingRequest, setEditingRequest] = useState<{ id: number; status: string; notes: string } | null>(null);
 
   const handleLogin = () => {
     if (password === 'HELP2025') {
       setIsAuthorized(true);
       loadPendingAnnouncements();
       loadStats();
+      loadDonations();
+      loadCelebrityRequests();
     } else {
       toast({
         title: 'Ошибка',
@@ -55,6 +63,24 @@ const Admin = () => {
     }
   };
 
+  const loadDonations = async () => {
+    try {
+      const data = await donationsApi.getAll('HELP2025');
+      setDonations(data);
+    } catch (error) {
+      console.error('Ошибка загрузки пожертвований:', error);
+    }
+  };
+
+  const loadCelebrityRequests = async () => {
+    try {
+      const data = await celebritiesApi.getAll('HELP2025');
+      setCelebrityRequests(data);
+    } catch (error) {
+      console.error('Ошибка загрузки обращений:', error);
+    }
+  };
+
   const handleConfirmPayment = async (id: number) => {
     try {
       await paymentsApi.confirmPayment(id, 'HELP2025');
@@ -69,6 +95,42 @@ const Admin = () => {
         description: 'Не удалось подтвердить платёж',
         variant: 'destructive'
       });
+    }
+  };
+
+  const handleAssignDonation = async () => {
+    if (!editingDonation) return;
+    
+    try {
+      await donationsApi.assignDonation(
+        editingDonation.id,
+        editingDonation.assigned_to,
+        editingDonation.notes,
+        'HELP2025'
+      );
+      toast({ title: 'Успешно', description: 'Пожертвование назначено' });
+      setEditingDonation(null);
+      await loadDonations();
+    } catch (error) {
+      toast({ title: 'Ошибка', description: 'Не удалось назначить пожертвование', variant: 'destructive' });
+    }
+  };
+
+  const handleUpdateCelebrityRequest = async () => {
+    if (!editingRequest) return;
+    
+    try {
+      await celebritiesApi.updateStatus(
+        editingRequest.id,
+        editingRequest.status,
+        editingRequest.notes,
+        'HELP2025'
+      );
+      toast({ title: 'Успешно', description: 'Статус обновлён' });
+      setEditingRequest(null);
+      await loadCelebrityRequests();
+    } catch (error) {
+      toast({ title: 'Ошибка', description: 'Не удалось обновить статус', variant: 'destructive' });
     }
   };
 
@@ -163,14 +225,28 @@ const Admin = () => {
           </Card>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Icon name="Clock" size={24} />
-              Ожидают подтверждения оплаты ({announcements.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <Tabs defaultValue="announcements" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="announcements">
+              Объявления ({announcements.length})
+            </TabsTrigger>
+            <TabsTrigger value="donations">
+              Пожертвования ({donations.length})
+            </TabsTrigger>
+            <TabsTrigger value="celebrities">
+              Знаменитости ({celebrityRequests.length})
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="announcements">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Icon name="Clock" size={24} />
+                  Ожидают подтверждения оплаты
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
             {loading ? (
               <div className="text-center py-8 text-muted-foreground">
                 Загрузка...
@@ -227,8 +303,169 @@ const Admin = () => {
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="donations">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Icon name="Heart" size={24} />
+                  Управление пожертвованиями
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {donations.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    Пожертвований пока нет
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {donations.map((donation) => (
+                      <Card key={donation.id} className="border-primary/20">
+                        <CardContent className="pt-6 space-y-3">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Icon name="User" size={16} />
+                                <span className="font-semibold">{donation.donor_name}</span>
+                                <Badge>{donation.amount}₽</Badge>
+                              </div>
+                              {donation.message && (
+                                <p className="text-sm text-muted-foreground italic mb-2">"{donation.message}"</p>
+                              )}
+                              {donation.donor_contact && (
+                                <p className="text-xs text-muted-foreground">Контакт: {donation.donor_contact}</p>
+                              )}
+                              {donation.assigned_to && (
+                                <Badge variant="outline" className="mt-2">
+                                  Назначено: {donation.assigned_to}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                          {editingDonation?.id === donation.id ? (
+                            <div className="space-y-2 border-t pt-3">
+                              <Input
+                                placeholder="Кому назначить пожертвование"
+                                value={editingDonation.assigned_to}
+                                onChange={(e) => setEditingDonation({ ...editingDonation, assigned_to: e.target.value })}
+                              />
+                              <Textarea
+                                placeholder="Заметки администратора"
+                                value={editingDonation.notes}
+                                onChange={(e) => setEditingDonation({ ...editingDonation, notes: e.target.value })}
+                                rows={2}
+                              />
+                              <div className="flex gap-2">
+                                <Button size="sm" onClick={handleAssignDonation}>Сохранить</Button>
+                                <Button size="sm" variant="outline" onClick={() => setEditingDonation(null)}>Отмена</Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => setEditingDonation({ 
+                                id: donation.id, 
+                                assigned_to: donation.assigned_to || '', 
+                                notes: donation.admin_notes || '' 
+                              })}
+                            >
+                              <Icon name="Edit" size={14} className="mr-1" />
+                              Назначить
+                            </Button>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="celebrities">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Icon name="Star" size={24} />
+                  Обращения к знаменитостям
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {celebrityRequests.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    Обращений пока нет
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {celebrityRequests.map((request) => (
+                      <Card key={request.id} className="border-warning/20">
+                        <CardContent className="pt-6 space-y-3">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Icon name="User" size={16} />
+                              <span className="font-semibold">{request.requester_name}</span>
+                              <Icon name="ArrowRight" size={14} />
+                              <Icon name="Star" size={16} className="text-warning" />
+                              <span className="font-semibold text-primary">{request.celebrity_name}</span>
+                            </div>
+                            <p className="text-sm">{request.request_text}</p>
+                            {request.requester_contact && (
+                              <p className="text-xs text-muted-foreground">Контакт: {request.requester_contact}</p>
+                            )}
+                            <Badge variant={request.status === 'pending' ? 'secondary' : 'default'}>
+                              {request.status === 'pending' ? 'На рассмотрении' : request.status}
+                            </Badge>
+                          </div>
+                          {editingRequest?.id === request.id ? (
+                            <div className="space-y-2 border-t pt-3">
+                              <select 
+                                className="w-full p-2 border rounded"
+                                value={editingRequest.status}
+                                onChange={(e) => setEditingRequest({ ...editingRequest, status: e.target.value })}
+                              >
+                                <option value="pending">На рассмотрении</option>
+                                <option value="approved">Одобрено</option>
+                                <option value="sent">Отправлено</option>
+                                <option value="rejected">Отклонено</option>
+                              </select>
+                              <Textarea
+                                placeholder="Заметки администратора"
+                                value={editingRequest.notes}
+                                onChange={(e) => setEditingRequest({ ...editingRequest, notes: e.target.value })}
+                                rows={2}
+                              />
+                              <div className="flex gap-2">
+                                <Button size="sm" onClick={handleUpdateCelebrityRequest}>Сохранить</Button>
+                                <Button size="sm" variant="outline" onClick={() => setEditingRequest(null)}>Отмена</Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => setEditingRequest({ 
+                                id: request.id, 
+                                status: request.status, 
+                                notes: request.admin_notes || '' 
+                              })}
+                            >
+                              <Icon name="Edit" size={14} className="mr-1" />
+                              Изменить статус
+                            </Button>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

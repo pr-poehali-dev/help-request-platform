@@ -493,14 +493,32 @@ const Index = () => {
             </div>
           </div>
           
-          <div className="mt-12 text-center">
+          <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button 
               variant="outline" 
               size="lg"
               onClick={() => window.location.href = '/payment-guide'}
             >
               <Icon name="HelpCircle" className="mr-2" size={20} />
-              Как разместить объявление и оплатить?
+              Как разместить объявление?
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="bg-primary/10 hover:bg-primary/20"
+              onClick={() => window.location.href = '/charity'}
+            >
+              <Icon name="Heart" className="mr-2" size={20} />
+              Благотворительность
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="bg-warning/10 hover:bg-warning/20"
+              onClick={() => window.location.href = '/celebrities'}
+            >
+              <Icon name="Star" className="mr-2" size={20} />
+              Обратиться к знаменитости
             </Button>
           </div>
         </div>

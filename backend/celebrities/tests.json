@@ -1,0 +1,25 @@
+{
+  "tests": [
+    {
+      "name": "Create celebrity request",
+      "method": "POST",
+      "body": {
+        "action": "create_request",
+        "requester_name": "Мария Петрова",
+        "requester_contact": "+79001234567",
+        "celebrity_name": "Александр Овечкин",
+        "request_text": "Помогите собрать средства на лечение ребенка"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get celebrity requests",
+      "method": "GET",
+      "expectedStatus": 200
+    }
+  ]
+}

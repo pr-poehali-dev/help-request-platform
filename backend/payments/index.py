@@ -68,14 +68,14 @@ def handler(event: dict, context) -> dict:
                     (title, description, category, author_name, author_contact, type, payment_amount, payment_status, expires_at)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                     RETURNING id
-                """, (title, description, category, author_name, author_contact, announcement_type, amount, 'pending', expires_at))
+                """, (title, description, category, author_name, author_contact, announcement_type, amount, 'paid', expires_at))
                 
                 announcement_id = cursor.fetchone()[0]
                 conn.commit()
                 
                 type_names = {'regular': 'Обычное', 'boosted': 'Поднятое', 'vip': 'VIP'}
                 send_telegram_notification(
-                    f"💰 <b>Новое объявление ожидает оплаты</b>\n\n"
+                    f"✅ <b>Новое объявление (оплачено автоматически)</b>\n\n"
                     f"📝 <b>Заголовок:</b> {title}\n"
                     f"📂 <b>Категория:</b> {category}\n"
                     f"🏷 <b>Тип:</b> {type_names.get(announcement_type, announcement_type)}\n"
@@ -85,7 +85,7 @@ def handler(event: dict, context) -> dict:
                     f"ID объявления: {announcement_id}"
                 )
                 
-                yoomoney_card = '4100119447434780'
+                yoomoney_card = '2204311315839002'
                 payment_url = f'https://yoomoney.ru/to/{yoomoney_card}/{amount}'
                 
                 return {
@@ -100,8 +100,8 @@ def handler(event: dict, context) -> dict:
                         'amount': amount,
                         'payment_url': payment_url,
                         'yoomoney_card': yoomoney_card,
-                        'payment_status': 'pending',
-                        'message': f'Переведите {amount}₽ на карту ЮMoney {yoomoney_card}'
+                        'payment_status': 'paid',
+                        'message': f'Объявление создано и опубликовано! Переведите {amount}₽ на карту {yoomoney_card}'
                     }),
                     'isBase64Encoded': False
                 }

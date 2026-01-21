@@ -164,7 +164,7 @@ const PaymentGuide = () => {
                   <Icon name="CreditCard" size={32} className="text-primary" />
                   <div>
                     <div className="font-semibold">Номер карты ЮMoney:</div>
-                    <div className="text-2xl font-mono text-primary">4100 1194 4743 4780</div>
+                    <div className="text-2xl font-mono text-primary">2204 3113 1583 9002</div>
                   </div>
                 </div>
               </div>

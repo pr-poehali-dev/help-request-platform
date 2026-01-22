@@ -71,6 +71,28 @@ export const AnnouncementCard = ({
             </div>
           </div>
           <div className="flex gap-2">
+            <Button 
+              size="sm" 
+              variant="ghost"
+              onClick={(e) => {
+                e.stopPropagation();
+                const shareUrl = `${window.location.origin}?share=${announcement.id}`;
+                const shareText = `${announcement.title} - ${announcement.category}`;
+                
+                if (navigator.share) {
+                  navigator.share({
+                    title: shareText,
+                    text: announcement.description,
+                    url: shareUrl
+                  });
+                } else {
+                  navigator.clipboard.writeText(shareUrl);
+                  alert('Ссылка скопирована в буфер обмена!');
+                }
+              }}
+            >
+              <Icon name="Share2" size={14} />
+            </Button>
             {isAuthor && (
               <Button 
                 size="sm" 

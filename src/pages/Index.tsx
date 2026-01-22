@@ -160,6 +160,40 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-secondary/30 via-background to-accent/20">
       <Header onCreateClick={() => setActiveTab('create')} />
 
+      {activeTab === 'all' && announcements.length === 0 && !loading && (
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            <div className="text-center">
+              <img 
+                src="https://cdn.poehali.dev/projects/f66c15c0-cdb3-4fda-9fe6-00f13fa938c1/files/703811e0-d087-47e0-9833-7c035bb0079e.jpg" 
+                alt="Взаимопомощь" 
+                className="w-full h-48 object-cover rounded-lg mb-3"
+              />
+              <h3 className="font-semibold mb-2">Помогайте друг другу</h3>
+              <p className="text-sm text-muted-foreground">Создавайте объявления и находите тех, кто готов помочь</p>
+            </div>
+            <div className="text-center">
+              <img 
+                src="https://cdn.poehali.dev/projects/f66c15c0-cdb3-4fda-9fe6-00f13fa938c1/files/f27338ee-2bab-4bf7-830f-320e3853997c.jpg" 
+                alt="Сообщество" 
+                className="w-full h-48 object-cover rounded-lg mb-3"
+              />
+              <h3 className="font-semibold mb-2">Вместе мы сильнее</h3>
+              <p className="text-sm text-muted-foreground">Станьте частью сообщества взаимопомощи</p>
+            </div>
+            <div className="text-center">
+              <img 
+                src="https://cdn.poehali.dev/projects/f66c15c0-cdb3-4fda-9fe6-00f13fa938c1/files/20aaeb96-ee0d-4a87-b0c0-3683bb91547f.jpg" 
+                alt="Поддержка" 
+                className="w-full h-48 object-cover rounded-lg mb-3"
+              />
+              <h3 className="font-semibold mb-2">Доброта рядом</h3>
+              <p className="text-sm text-muted-foreground">Делитесь теплом и получайте поддержку</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-8">

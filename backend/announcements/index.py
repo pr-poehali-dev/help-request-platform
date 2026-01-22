@@ -183,6 +183,39 @@ def handler(event: dict, context) -> dict:
                     'body': json.dumps({'success': True}),
                     'isBase64Encoded': False
                 }
+            
+            elif action == 'delete_all':
+                # Удаление всех объявлений (только для админа)
+                admin_code = body.get('admin_code', '')
+                
+                if admin_code != 'HELP2025':
+                    return {
+                        'statusCode': 403,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'body': json.dumps({'error': 'Неверный код'}),
+                        'isBase64Encoded': False
+                    }
+                
+                cursor.execute(f"DELETE FROM {schema}.announcements")
+                deleted_count = cursor.rowcount
+                conn.commit()
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({
+                        'success': True,
+                        'deleted': deleted_count,
+                        'message': f'Удалено {deleted_count} объявлений'
+                    }),
+                    'isBase64Encoded': False
+                }
         
         return {
             'statusCode': 405,

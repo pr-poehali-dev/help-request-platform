@@ -120,7 +120,6 @@ def handler(event: dict, context) -> dict:
                 
                 amount = 60
                 ozon_card = '2204321081688079'
-                payment_url = f'https://www.tinkoff.ru/rm/p2p/?card={ozon_card}&amount={amount}'
                 
                 send_telegram_notification(
                     f"⭐ <b>Новое обращение к знаменитости!</b>\n\n"
@@ -142,9 +141,8 @@ def handler(event: dict, context) -> dict:
                         'success': True,
                         'request_id': request_id,
                         'amount': amount,
-                        'payment_url': payment_url,
                         'ozon_card': ozon_card,
-                        'message': f'Обращение создано! Переведите {amount}₽ на карту Ozon {ozon_card}'
+                        'message': f'Обращение создано! Переведите {amount}₽ на карту Ozon {ozon_card} или отсканируйте QR-код в форме'
                     }),
                     'isBase64Encoded': False
                 }

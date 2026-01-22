@@ -97,7 +97,6 @@ export const paymentsApi = {
     success: boolean; 
     announcement_id: number; 
     amount: number;
-    payment_url?: string;
     ozon_card?: string;
     payment_status: string;
     message?: string;
@@ -217,8 +216,8 @@ export const donationsApi = {
   }): Promise<{
     success: boolean;
     donation_id: number;
-    payment_url: string;
     ozon_card: string;
+    message: string;
   }> {
     const response = await fetch(API_URLS.donations, {
       method: 'POST',
@@ -271,7 +270,6 @@ export const celebritiesApi = {
     request_id: number; 
     message: string;
     amount: number;
-    payment_url: string;
     ozon_card: string;
   }> {
     const response = await fetch(API_URLS.celebrities, {

@@ -84,25 +84,15 @@ const Index = () => {
         type: newAnnouncement.type
       });
 
-      if (result.payment_url) {
-        window.open(result.payment_url, '_blank');
-        toast({
-          title: 'Инструкция по оплате',
-          description: `Переведите ${result.amount}₽ на карту ЮMoney ${result.yoomoney_card}. После оплаты напишите администратору для подтверждения.`,
-          duration: 10000
-        });
-        setNewAnnouncement({ title: '', description: '', category: '', author_contact: '', type: 'regular' });
-        setActiveTab('all');
-        await loadAnnouncements();
-      } else {
-        toast({
-          title: 'Объявление создано!',
-          description: `Сумма: ${result.amount}₽`
-        });
-        setNewAnnouncement({ title: '', description: '', category: '', author_contact: '', type: 'regular' });
-        setActiveTab('all');
-        await loadAnnouncements();
-      }
+      toast({
+        title: 'Объявление создано!',
+        description: result.message || `Переведите ${result.amount}₽ на карту Ozon для публикации`,
+        duration: 10000
+      });
+      
+      setNewAnnouncement({ title: '', description: '', category: '', author_contact: '', type: 'regular' });
+      setActiveTab('all');
+      await loadAnnouncements();
     } catch (error) {
       toast({
         title: 'Ошибка',

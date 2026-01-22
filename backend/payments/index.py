@@ -86,7 +86,6 @@ def handler(event: dict, context) -> dict:
                 )
                 
                 ozon_card = '2204321081688079'
-                payment_url = f'https://www.tinkoff.ru/rm/p2p/?card={ozon_card}&amount={amount}'
                 
                 return {
                     'statusCode': 200,
@@ -98,10 +97,9 @@ def handler(event: dict, context) -> dict:
                         'success': True,
                         'announcement_id': announcement_id,
                         'amount': amount,
-                        'payment_url': payment_url,
                         'ozon_card': ozon_card,
                         'payment_status': 'paid',
-                        'message': f'Объявление создано и опубликовано! Переведите {amount}₽ на карту Ozon {ozon_card}'
+                        'message': f'Объявление создано и опубликовано! Переведите {amount}₽ на карту Ozon {ozon_card}. Для подробной инструкции перейдите в раздел "Как разместить объявление?"'
                     }),
                     'isBase64Encoded': False
                 }

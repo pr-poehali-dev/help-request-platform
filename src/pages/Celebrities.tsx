@@ -70,10 +70,6 @@ const Celebrities = () => {
         request_text: formData.request_text
       });
 
-      if (result.payment_url) {
-        window.open(result.payment_url, '_blank');
-      }
-
       toast({
         title: 'Обращение создано!',
         description: result.message || `Переведите ${result.amount}₽ на карту Ozon для публикации`,

@@ -79,12 +79,9 @@ const Charity = () => {
 
       toast({
         title: 'Спасибо за поддержку!',
-        description: result.message || 'Ваше пожертвование принято'
+        description: result.message || 'Ваше пожертвование создано',
+        duration: 10000
       });
-
-      if (result.payment_url) {
-        window.open(result.payment_url, '_blank');
-      }
 
       setFormData({ donor_name: '', donor_contact: '', amount: '', message: '' });
       setShowForm(false);

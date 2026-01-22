@@ -54,8 +54,7 @@ const Admin = () => {
     setLoading(true);
     try {
       const data = await announcementsApi.getAll();
-      const pending = data.filter(a => a.status === 'Ожидает оплаты');
-      setAnnouncements(pending);
+      setAnnouncements(data);
     } catch (error) {
       console.error('Ошибка загрузки:', error);
     } finally {
@@ -131,6 +130,18 @@ const Admin = () => {
       await loadCelebrityRequests();
     } catch (error) {
       toast({ title: 'Ошибка', description: 'Не удалось обновить статус', variant: 'destructive' });
+    }
+  };
+
+  const handleDeleteAnnouncement = async (id: number) => {
+    if (!confirm('Вы уверены, что хотите удалить это объявление?')) return;
+    
+    try {
+      await announcementsApi.deleteAnnouncement(id, 'HELP2025');
+      toast({ title: 'Успешно', description: 'Объявление удалено' });
+      await loadPendingAnnouncements();
+    } catch (error) {
+      toast({ title: 'Ошибка', description: 'Не удалось удалить объявление', variant: 'destructive' });
     }
   };
 
@@ -242,8 +253,8 @@ const Admin = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Icon name="Clock" size={24} />
-                  Ожидают подтверждения оплаты
+                  <Icon name="FileText" size={24} />
+                  Все объявления
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -253,7 +264,7 @@ const Admin = () => {
               </div>
             ) : announcements.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                Нет объявлений, ожидающих подтверждения
+                Нет объявлений
               </div>
             ) : (
               <div className="space-y-4">
@@ -290,13 +301,25 @@ const Admin = () => {
                             </span>
                           </div>
                         </div>
-                        <Button 
-                          onClick={() => handleConfirmPayment(announcement.id)}
-                          className="shrink-0"
-                        >
-                          <Icon name="CheckCircle" size={18} />
-                          Подтвердить оплату
-                        </Button>
+                        <div className="flex flex-col gap-2 shrink-0">
+                          {announcement.status === 'Ожидает оплаты' && (
+                            <Button 
+                              onClick={() => handleConfirmPayment(announcement.id)}
+                              size="sm"
+                            >
+                              <Icon name="CheckCircle" size={16} className="mr-1" />
+                              Подтвердить
+                            </Button>
+                          )}
+                          <Button 
+                            onClick={() => handleDeleteAnnouncement(announcement.id)}
+                            variant="destructive"
+                            size="sm"
+                          >
+                            <Icon name="Trash2" size={16} className="mr-1" />
+                            Удалить
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

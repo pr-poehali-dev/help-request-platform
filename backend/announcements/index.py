@@ -216,6 +216,38 @@ def handler(event: dict, context) -> dict:
                     }),
                     'isBase64Encoded': False
                 }
+            
+            elif action == 'delete':
+                # Удаление конкретного объявления (только для админа)
+                admin_code = body.get('admin_code', '')
+                announcement_id = body.get('id')
+                
+                if admin_code != 'HELP2025':
+                    return {
+                        'statusCode': 403,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'body': json.dumps({'error': 'Неверный код'}),
+                        'isBase64Encoded': False
+                    }
+                
+                cursor.execute(f"DELETE FROM {schema}.announcements WHERE id = %s", (announcement_id,))
+                conn.commit()
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({
+                        'success': True,
+                        'message': 'Объявление удалено'
+                    }),
+                    'isBase64Encoded': False
+                }
         
         return {
             'statusCode': 405,

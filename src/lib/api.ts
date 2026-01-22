@@ -82,6 +82,16 @@ export const announcementsApi = {
       body: JSON.stringify({ action: 'close', id })
     });
     if (!response.ok) throw new Error('Failed to close announcement');
+  },
+
+  async deleteAnnouncement(id: number, admin_code: string): Promise<{ success: boolean }> {
+    const response = await fetch(API_URLS.announcements, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'delete', id, admin_code })
+    });
+    if (!response.ok) throw new Error('Failed to delete announcement');
+    return response.json();
   }
 };
 

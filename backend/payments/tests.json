@@ -17,7 +17,7 @@
         "success": true,
         "amount": 10,
         "ozon_card": "2204321081688079",
-        "payment_status": "paid"
+        "payment_status": "pending"
       },
       "bodyMatcher": "partial"
     },

@@ -68,24 +68,25 @@ def handler(event: dict, context) -> dict:
                     (title, description, category, author_name, author_contact, type, payment_amount, payment_status, expires_at)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                     RETURNING id
-                """, (title, description, category, author_name, author_contact, announcement_type, amount, 'paid', expires_at))
+                """, (title, description, category, author_name, author_contact, announcement_type, amount, 'pending', expires_at))
                 
                 announcement_id = cursor.fetchone()[0]
                 conn.commit()
                 
+                ozon_card = '2204321081688079'
+                
                 type_names = {'regular': 'Обычное', 'boosted': 'Поднятое', 'vip': 'VIP'}
                 send_telegram_notification(
-                    f"✅ <b>Новое объявление (оплачено автоматически)</b>\n\n"
+                    f"🔔 <b>Новое объявление ожидает оплаты</b>\n\n"
                     f"📝 <b>Заголовок:</b> {title}\n"
                     f"📂 <b>Категория:</b> {category}\n"
                     f"🏷 <b>Тип:</b> {type_names.get(announcement_type, announcement_type)}\n"
                     f"💵 <b>Сумма:</b> {amount}₽\n"
                     f"👤 <b>Автор:</b> {author_name}\n"
                     f"📞 <b>Контакт:</b> {author_contact}\n\n"
+                    f"⚠️ Проверьте оплату на карте Ozon {ozon_card}\n"
                     f"ID объявления: {announcement_id}"
                 )
-                
-                ozon_card = '2204321081688079'
                 
                 return {
                     'statusCode': 200,
@@ -98,8 +99,8 @@ def handler(event: dict, context) -> dict:
                         'announcement_id': announcement_id,
                         'amount': amount,
                         'ozon_card': ozon_card,
-                        'payment_status': 'paid',
-                        'message': f'Объявление создано и опубликовано! Переведите {amount}₽ на карту Ozon {ozon_card}. Для подробной инструкции перейдите в раздел "Как разместить объявление?"'
+                        'payment_status': 'pending',
+                        'message': f'Объявление создано! Переведите {amount}₽ на карту Ozon {ozon_card}. После проверки оплаты администратором объявление будет опубликовано. Для подробной инструкции перейдите в раздел "Как разместить объявление?"'
                     }),
                     'isBase64Encoded': False
                 }

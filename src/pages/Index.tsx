@@ -304,38 +304,46 @@ const Index = () => {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Icon name="CreditCard" size={24} />
+              <Icon name="QrCode" size={24} />
               Оплата объявления
             </DialogTitle>
             <DialogDescription>
-              Переведите {paymentDialog.amount}₽ на карту Ozon для публикации объявления
+              Отсканируйте QR-код для оплаты {paymentDialog.amount}₽
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="bg-secondary/50 p-4 rounded-lg text-center space-y-3">
-              <p className="text-sm text-muted-foreground">Номер карты Ozon:</p>
-              <p className="text-2xl font-bold tracking-wider">{paymentDialog.card}</p>
-              <div className="flex justify-center">
+            <div className="bg-secondary/50 p-6 rounded-lg text-center">
+              <div className="flex justify-center mb-3">
                 {paymentDialog.qrCode && (
-                  <img src={paymentDialog.qrCode} alt="QR код для оплаты" className="w-48 h-48" />
+                  <img src={paymentDialog.qrCode} alt="QR код для оплаты" className="w-56 h-56" />
                 )}
               </div>
               <p className="text-sm text-muted-foreground">
-                Отсканируйте QR-код или переведите вручную
+                Отсканируйте QR-код камерой телефона
               </p>
             </div>
             <div className="bg-warning/10 border border-warning/20 p-3 rounded-lg">
               <p className="text-sm text-warning-foreground flex items-start gap-2">
                 <Icon name="Info" size={16} className="mt-0.5 shrink-0" />
-                <span>После проверки оплаты администратором объявление будет опубликовано на сайте</span>
+                <span>После проверки оплаты администратором объявление будет опубликовано</span>
               </p>
             </div>
-            <Button 
-              onClick={() => setPaymentDialog({ ...paymentDialog, open: false })} 
-              className="w-full"
-            >
-              Понятно
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => window.open(`https://qr.nspk.ru/proactive/pay?qrurl=${encodeURIComponent(paymentDialog.card)}`, '_blank')}
+                className="flex-1"
+              >
+                <Icon name="CreditCard" className="mr-2" size={18} />
+                Оплатить
+              </Button>
+              <Button 
+                onClick={() => setPaymentDialog({ ...paymentDialog, open: false })} 
+                variant="outline"
+                className="flex-1"
+              >
+                Закрыть
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

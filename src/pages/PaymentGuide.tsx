@@ -2,9 +2,26 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import QRCode from 'qrcode';
 
 const PaymentGuide = () => {
   const navigate = useNavigate();
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
+  const cardNumber = '2204321081688079';
+
+  useEffect(() => {
+    if (qrCanvasRef.current) {
+      QRCode.toCanvas(qrCanvasRef.current, cardNumber, {
+        width: 200,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary/30 via-background to-accent/20 p-4 md:p-8">
@@ -160,11 +177,17 @@ const PaymentGuide = () => {
               </p>
               
               <div className="bg-background rounded-lg p-4 border-2 border-primary/20">
-                <div className="flex items-center gap-3 mb-3">
-                  <Icon name="CreditCard" size={32} className="text-primary" />
-                  <div>
-                    <div className="font-semibold">Номер карты Ozon:</div>
-                    <div className="text-2xl font-mono text-primary">2204 3210 8168 8079</div>
+                <div className="grid md:grid-cols-2 gap-4 items-center">
+                  <div className="flex items-center gap-3">
+                    <Icon name="CreditCard" size={32} className="text-primary" />
+                    <div>
+                      <div className="font-semibold">Номер карты Ozon:</div>
+                      <div className="text-2xl font-mono text-primary">2204 3210 8168 8079</div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="text-sm font-medium mb-2">Отсканируйте QR-код:</div>
+                    <canvas ref={qrCanvasRef} className="border-2 border-primary/20 rounded-lg" />
                   </div>
                 </div>
               </div>

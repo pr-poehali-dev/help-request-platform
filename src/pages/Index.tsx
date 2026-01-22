@@ -10,6 +10,8 @@ import { Header } from '@/components/index/Header';
 import { FilterBar } from '@/components/index/FilterBar';
 import { AnnouncementCard } from '@/components/index/AnnouncementCard';
 import { CreateForm } from '@/components/index/CreateForm';
+import QRCode from 'qrcode';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 const CURRENT_USER = 'Вы';
 
@@ -45,6 +47,12 @@ const Index = () => {
     announcementId: 0,
     title: '',
     isAuthor: false
+  });
+  const [paymentDialog, setPaymentDialog] = useState<{ open: boolean; amount: number; card: string; qrCode: string }>({
+    open: false,
+    amount: 0,
+    card: '',
+    qrCode: ''
   });
 
   useEffect(() => {
@@ -84,10 +92,13 @@ const Index = () => {
         type: newAnnouncement.type
       });
 
-      toast({
-        title: 'Объявление создано!',
-        description: result.message || `Переведите ${result.amount}₽ на карту Ozon для публикации`,
-        duration: 10000
+      const qrCodeDataUrl = await QRCode.toDataURL(result.ozon_card, { width: 200, margin: 1 });
+      
+      setPaymentDialog({
+        open: true,
+        amount: result.amount,
+        card: result.ozon_card,
+        qrCode: qrCodeDataUrl
       });
       
       setNewAnnouncement({ title: '', description: '', category: '', author_contact: '', type: 'regular' });
@@ -288,6 +299,46 @@ const Index = () => {
         announcementTitle={responsesDialog.title}
         isAuthor={responsesDialog.isAuthor}
       />
+
+      <Dialog open={paymentDialog.open} onOpenChange={(open) => setPaymentDialog({ ...paymentDialog, open })}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Icon name="CreditCard" size={24} />
+              Оплата объявления
+            </DialogTitle>
+            <DialogDescription>
+              Переведите {paymentDialog.amount}₽ на карту Ozon для публикации объявления
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-secondary/50 p-4 rounded-lg text-center space-y-3">
+              <p className="text-sm text-muted-foreground">Номер карты Ozon:</p>
+              <p className="text-2xl font-bold tracking-wider">{paymentDialog.card}</p>
+              <div className="flex justify-center">
+                {paymentDialog.qrCode && (
+                  <img src={paymentDialog.qrCode} alt="QR код для оплаты" className="w-48 h-48" />
+                )}
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Отсканируйте QR-код или переведите вручную
+              </p>
+            </div>
+            <div className="bg-warning/10 border border-warning/20 p-3 rounded-lg">
+              <p className="text-sm text-warning-foreground flex items-start gap-2">
+                <Icon name="Info" size={16} className="mt-0.5 shrink-0" />
+                <span>После проверки оплаты администратором объявление будет опубликовано на сайте</span>
+              </p>
+            </div>
+            <Button 
+              onClick={() => setPaymentDialog({ ...paymentDialog, open: false })} 
+              className="w-full"
+            >
+              Понятно
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

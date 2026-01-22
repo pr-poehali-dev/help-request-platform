@@ -1,7 +1,7 @@
 {
   "tests": [
     {
-      "name": "Create payment with ЮMoney",
+      "name": "Create payment with Ozon",
       "method": "POST",
       "body": {
         "action": "create_payment",
@@ -16,7 +16,7 @@
       "expectedBody": {
         "success": true,
         "amount": 10,
-        "yandex_card": "2204311315839002",
+        "ozon_card": "2204321081688079",
         "payment_status": "paid"
       },
       "bodyMatcher": "partial"

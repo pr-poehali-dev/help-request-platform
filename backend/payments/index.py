@@ -22,8 +22,8 @@ def send_telegram_notification(message: str):
 
 def handler(event: dict, context) -> dict:
     """
-    API для приема платежей через Яндекс.
-    Создаёт объявление и показывает инструкцию для оплаты на карту Яндекс.
+    API для приема платежей через Ozon.
+    Создаёт объявление и показывает инструкцию для оплаты на карту Ozon.
     """
     method = event.get('httpMethod', 'GET')
     
@@ -85,8 +85,8 @@ def handler(event: dict, context) -> dict:
                     f"ID объявления: {announcement_id}"
                 )
                 
-                yandex_card = '2204311315839002'
-                payment_url = f'https://yoomoney.ru/to/{yandex_card}/{amount}'
+                ozon_card = '2204321081688079'
+                payment_url = f'https://yoomoney.ru/to/{ozon_card}/{amount}'
                 
                 return {
                     'statusCode': 200,
@@ -99,9 +99,9 @@ def handler(event: dict, context) -> dict:
                         'announcement_id': announcement_id,
                         'amount': amount,
                         'payment_url': payment_url,
-                        'yandex_card': yandex_card,
+                        'ozon_card': ozon_card,
                         'payment_status': 'paid',
-                        'message': f'Объявление создано и опубликовано! Переведите {amount}₽ на карту Яндекс {yandex_card}'
+                        'message': f'Объявление создано и опубликовано! Переведите {amount}₽ на карту Ozon {ozon_card}'
                     }),
                     'isBase64Encoded': False
                 }

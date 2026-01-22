@@ -374,28 +374,33 @@ const Index = () => {
                 Отсканируйте QR-код камерой телефона
               </p>
             </div>
+            <div className="bg-secondary/50 p-4 rounded-lg text-center">
+              <p className="text-sm font-medium mb-2">Номер карты Ozon:</p>
+              <p className="text-xl font-bold tracking-wider mb-3">{paymentDialog.card}</p>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(paymentDialog.card);
+                  toast({ title: 'Скопировано!', description: 'Номер карты скопирован в буфер обмена' });
+                }}
+              >
+                <Icon name="Copy" className="mr-2" size={14} />
+                Скопировать номер
+              </Button>
+            </div>
             <div className="bg-warning/10 border border-warning/20 p-3 rounded-lg">
               <p className="text-sm text-warning-foreground flex items-start gap-2">
                 <Icon name="Info" size={16} className="mt-0.5 shrink-0" />
                 <span>После проверки оплаты администратором объявление будет опубликовано</span>
               </p>
             </div>
-            <div className="flex gap-2">
-              <Button 
-                onClick={() => window.open(`https://qr.nspk.ru/proactive/pay?qrurl=${encodeURIComponent(paymentDialog.card)}`, '_blank')}
-                className="flex-1"
-              >
-                <Icon name="CreditCard" className="mr-2" size={18} />
-                Оплатить
-              </Button>
-              <Button 
-                onClick={() => setPaymentDialog({ ...paymentDialog, open: false })} 
-                variant="outline"
-                className="flex-1"
-              >
-                Закрыть
-              </Button>
-            </div>
+            <Button 
+              onClick={() => setPaymentDialog({ ...paymentDialog, open: false })} 
+              className="w-full"
+            >
+              Понятно
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

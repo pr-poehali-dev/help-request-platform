@@ -44,7 +44,7 @@ def handler(event: dict, context) -> dict:
                 """, (announcement_id,))
                 conn.commit()
             
-            query = f"SELECT * FROM {schema}.announcements WHERE payment_status IN ('paid', 'pending')"
+            query = f"SELECT * FROM {schema}.announcements WHERE payment_status = 'paid'"
             params = []
             
             if filter_type:

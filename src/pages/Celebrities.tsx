@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,21 +8,17 @@ import Icon from '@/components/ui/icon';
 import { toast } from '@/hooks/use-toast';
 import { celebritiesApi, type CelebrityRequest } from '@/lib/api';
 import { useNavigate } from 'react-router-dom';
-
-const POPULAR_CELEBRITIES = [
-  { name: 'Александр Овечкин', category: 'Спорт', icon: 'Trophy' },
-  { name: 'Филипп Киркоров', category: 'Музыка', icon: 'Music' },
-  { name: 'Тимати', category: 'Музыка', icon: 'Music' },
-  { name: 'Ксения Собчак', category: 'ТВ', icon: 'Tv' },
-  { name: 'Сергей Лазарев', category: 'Музыка', icon: 'Music' },
-  { name: 'Андрей Малахов', category: 'ТВ', icon: 'Tv' }
-];
+import { CELEBRITIES, POPULAR_CELEBRITIES } from '@/data/celebrities';
+import QRCode from 'qrcode';
 
 const Celebrities = () => {
   const navigate = useNavigate();
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
+  const cardNumber = '2204321081688079';
   const [requests, setRequests] = useState<CelebrityRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [formData, setFormData] = useState({
     requester_name: '',
     requester_contact: '',
@@ -32,7 +28,17 @@ const Celebrities = () => {
 
   useEffect(() => {
     loadRequests();
-  }, []);
+    if (qrCanvasRef.current && showForm) {
+      QRCode.toCanvas(qrCanvasRef.current, cardNumber, {
+        width: 180,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+    }
+  }, [showForm]);
 
   const loadRequests = async () => {
     setLoading(true);
@@ -64,9 +70,14 @@ const Celebrities = () => {
         request_text: formData.request_text
       });
 
+      if (result.payment_url) {
+        window.open(result.payment_url, '_blank');
+      }
+
       toast({
-        title: 'Обращение отправлено!',
-        description: result.message || 'Мы постараемся донести ваше обращение'
+        title: 'Обращение создано!',
+        description: result.message || `Переведите ${result.amount}₽ на карту Ozon для публикации`,
+        duration: 10000
       });
 
       setFormData({ requester_name: '', requester_contact: '', celebrity_name: '', request_text: '' });
@@ -80,6 +91,10 @@ const Celebrities = () => {
       });
     }
   };
+
+  const filteredCelebrities = searchQuery
+    ? CELEBRITIES.filter(name => name.toLowerCase().includes(searchQuery.toLowerCase()))
+    : [];
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
@@ -160,12 +175,37 @@ const Celebrities = () => {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Имя знаменитости *</label>
+                <label className="text-sm font-medium mb-2 block">Имя знаменитости * (база из 500+ имён)</label>
                 <Input
-                  placeholder="Введите имя или выберите выше"
+                  placeholder="Начните вводить имя для поиска..."
                   value={formData.celebrity_name}
-                  onChange={(e) => setFormData({ ...formData, celebrity_name: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, celebrity_name: e.target.value });
+                    setSearchQuery(e.target.value);
+                  }}
+                  onFocus={() => setSearchQuery(formData.celebrity_name)}
+                  onBlur={() => setTimeout(() => setSearchQuery(''), 200)}
                 />
+                {searchQuery && filteredCelebrities.length > 0 && (
+                  <Card className="mt-2 max-h-48 overflow-y-auto">
+                    <CardContent className="p-2">
+                      {filteredCelebrities.slice(0, 10).map((name) => (
+                        <Button
+                          key={name}
+                          variant="ghost"
+                          size="sm"
+                          className="w-full justify-start"
+                          onClick={() => {
+                            setFormData({ ...formData, celebrity_name: name });
+                            setSearchQuery('');
+                          }}
+                        >
+                          {name}
+                        </Button>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
               </div>
 
               <div>
@@ -196,10 +236,34 @@ const Celebrities = () => {
                 />
               </div>
 
+              <Card className="border-primary/20 bg-primary/5">
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Icon name="Coins" size={20} />
+                    Стоимость обращения: 60₽
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-2 gap-4 items-center">
+                    <div className="flex items-center gap-3">
+                      <Icon name="CreditCard" size={28} className="text-primary" />
+                      <div>
+                        <div className="text-sm font-semibold">Карта Ozon:</div>
+                        <div className="text-xl font-mono text-primary">2204 3210 8168 8079</div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="text-xs font-medium mb-2">Отсканируйте QR-код:</div>
+                      <canvas ref={qrCanvasRef} className="border-2 border-primary/20 rounded-lg" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               <div className="flex gap-2">
                 <Button onClick={handleSubmit} className="flex-1">
                   <Icon name="Send" size={18} className="mr-2" />
-                  Отправить обращение
+                  Отправить обращение и оплатить
                 </Button>
                 <Button variant="outline" onClick={() => setShowForm(false)}>
                   Отмена

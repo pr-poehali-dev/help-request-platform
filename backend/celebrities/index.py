@@ -118,12 +118,17 @@ def handler(event: dict, context) -> dict:
                 request_id = cursor.fetchone()['id']
                 conn.commit()
                 
+                amount = 60
+                ozon_card = '2204321081688079'
+                payment_url = f'https://yoomoney.ru/to/{ozon_card}/{amount}'
+                
                 send_telegram_notification(
                     f"⭐ <b>Новое обращение к знаменитости!</b>\n\n"
                     f"👤 <b>От:</b> {requester_name}\n"
                     f"🎭 <b>К кому:</b> {celebrity_name}\n"
                     f"📝 <b>Текст:</b> {request_text[:200]}...\n"
-                    f"📞 <b>Контакт:</b> {requester_contact}\n\n"
+                    f"📞 <b>Контакт:</b> {requester_contact}\n"
+                    f"💵 <b>Сумма:</b> {amount}₽\n\n"
                     f"ID обращения: {request_id}"
                 )
                 
@@ -136,7 +141,10 @@ def handler(event: dict, context) -> dict:
                     'body': json.dumps({
                         'success': True,
                         'request_id': request_id,
-                        'message': 'Ваше обращение отправлено! Мы постараемся донести его до адресата.'
+                        'amount': amount,
+                        'payment_url': payment_url,
+                        'ozon_card': ozon_card,
+                        'message': f'Обращение создано! Переведите {amount}₽ на карту Ozon {ozon_card}'
                     }),
                     'isBase64Encoded': False
                 }

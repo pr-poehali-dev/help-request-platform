@@ -266,7 +266,14 @@ export const celebritiesApi = {
     requester_contact: string;
     celebrity_name: string;
     request_text: string;
-  }): Promise<{ success: boolean; request_id: number; message: string }> {
+  }): Promise<{ 
+    success: boolean; 
+    request_id: number; 
+    message: string;
+    amount: number;
+    payment_url: string;
+    ozon_card: string;
+  }> {
     const response = await fetch(API_URLS.celebrities, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

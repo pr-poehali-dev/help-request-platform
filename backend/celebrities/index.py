@@ -120,7 +120,7 @@ def handler(event: dict, context) -> dict:
                 
                 amount = 60
                 ozon_card = '2204321081688079'
-                payment_url = f'https://yoomoney.ru/to/{ozon_card}/{amount}'
+                payment_url = f'https://www.tinkoff.ru/rm/p2p/?card={ozon_card}&amount={amount}'
                 
                 send_telegram_notification(
                     f"⭐ <b>Новое обращение к знаменитости!</b>\n\n"

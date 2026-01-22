@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,9 +7,12 @@ import Icon from '@/components/ui/icon';
 import { toast } from '@/hooks/use-toast';
 import { donationsApi, type Donation } from '@/lib/api';
 import { useNavigate } from 'react-router-dom';
+import QRCode from 'qrcode';
 
 const Charity = () => {
   const navigate = useNavigate();
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
+  const cardNumber = '2204321081688079';
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -22,6 +25,16 @@ const Charity = () => {
 
   useEffect(() => {
     loadDonations();
+    if (qrCanvasRef.current) {
+      QRCode.toCanvas(qrCanvasRef.current, cardNumber, {
+        width: 180,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+    }
   }, []);
 
   const loadDonations = async () => {
@@ -177,6 +190,27 @@ const Charity = () => {
                   rows={3}
                 />
               </div>
+
+              <Card className="border-primary/20 bg-primary/5">
+                <CardHeader>
+                  <CardTitle className="text-base">Реквизиты для оплаты</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-2 gap-4 items-center">
+                    <div className="flex items-center gap-3">
+                      <Icon name="CreditCard" size={28} className="text-primary" />
+                      <div>
+                        <div className="text-sm font-semibold">Карта Ozon:</div>
+                        <div className="text-xl font-mono text-primary">2204 3210 8168 8079</div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="text-xs font-medium mb-2">Отсканируйте QR-код:</div>
+                      <canvas ref={qrCanvasRef} className="border-2 border-primary/20 rounded-lg" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
               <div className="flex gap-2">
                 <Button onClick={handleSubmit} className="flex-1">

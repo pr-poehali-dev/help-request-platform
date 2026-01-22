@@ -160,40 +160,6 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-secondary/30 via-background to-accent/20">
       <Header onCreateClick={() => setActiveTab('create')} />
 
-      {activeTab === 'all' && announcements.length === 0 && !loading && (
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <div className="text-center">
-              <img 
-                src="https://cdn.poehali.dev/projects/f66c15c0-cdb3-4fda-9fe6-00f13fa938c1/files/703811e0-d087-47e0-9833-7c035bb0079e.jpg" 
-                alt="Взаимопомощь" 
-                className="w-full h-48 object-cover rounded-lg mb-3"
-              />
-              <h3 className="font-semibold mb-2">Помогайте друг другу</h3>
-              <p className="text-sm text-muted-foreground">Создавайте объявления и находите тех, кто готов помочь</p>
-            </div>
-            <div className="text-center">
-              <img 
-                src="https://cdn.poehali.dev/projects/f66c15c0-cdb3-4fda-9fe6-00f13fa938c1/files/f27338ee-2bab-4bf7-830f-320e3853997c.jpg" 
-                alt="Сообщество" 
-                className="w-full h-48 object-cover rounded-lg mb-3"
-              />
-              <h3 className="font-semibold mb-2">Вместе мы сильнее</h3>
-              <p className="text-sm text-muted-foreground">Станьте частью сообщества взаимопомощи</p>
-            </div>
-            <div className="text-center">
-              <img 
-                src="https://cdn.poehali.dev/projects/f66c15c0-cdb3-4fda-9fe6-00f13fa938c1/files/20aaeb96-ee0d-4a87-b0c0-3683bb91547f.jpg" 
-                alt="Поддержка" 
-                className="w-full h-48 object-cover rounded-lg mb-3"
-              />
-              <h3 className="font-semibold mb-2">Доброта рядом</h3>
-              <p className="text-sm text-muted-foreground">Делитесь теплом и получайте поддержку</p>
-            </div>
-          </div>
-        </div>
-      )}
-
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-8">
@@ -212,36 +178,88 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="all" className="animate-fade-in">
-            <FilterBar 
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-              categories={CATEGORIES}
-            />
-            
             {loading ? (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
                 <p className="text-muted-foreground mt-4">Загрузка объявлений...</p>
               </div>
-            ) : filteredAnnouncements.length === 0 ? (
-              <div className="text-center py-12">
-                <Icon name="SearchX" size={48} className="mx-auto text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">Объявлений не найдено</p>
+            ) : announcements.length === 0 ? (
+              <div>
+                <div className="grid md:grid-cols-3 gap-6 mb-12">
+                  <div className="text-center">
+                    <img 
+                      src="https://cdn.poehali.dev/projects/f66c15c0-cdb3-4fda-9fe6-00f13fa938c1/files/703811e0-d087-47e0-9833-7c035bb0079e.jpg" 
+                      alt="Взаимопомощь" 
+                      className="w-full h-48 object-cover rounded-lg mb-3"
+                    />
+                    <h3 className="font-semibold mb-2">Помогайте друг другу</h3>
+                    <p className="text-sm text-muted-foreground">Создавайте объявления и находите тех, кто готов помочь</p>
+                  </div>
+                  <div className="text-center">
+                    <img 
+                      src="https://cdn.poehali.dev/projects/f66c15c0-cdb3-4fda-9fe6-00f13fa938c1/files/f27338ee-2bab-4bf7-830f-320e3853997c.jpg" 
+                      alt="Сообщество" 
+                      className="w-full h-48 object-cover rounded-lg mb-3"
+                    />
+                    <h3 className="font-semibold mb-2">Вместе мы сильнее</h3>
+                    <p className="text-sm text-muted-foreground">Станьте частью сообщества взаимопомощи</p>
+                  </div>
+                  <div className="text-center">
+                    <img 
+                      src="https://cdn.poehali.dev/projects/f66c15c0-cdb3-4fda-9fe6-00f13fa938c1/files/20aaeb96-ee0d-4a87-b0c0-3683bb91547f.jpg" 
+                      alt="Поддержка" 
+                      className="w-full h-48 object-cover rounded-lg mb-3"
+                    />
+                    <h3 className="font-semibold mb-2">Доброта рядом</h3>
+                    <p className="text-sm text-muted-foreground">Делитесь теплом и получайте поддержку</p>
+                  </div>
+                </div>
+                <div className="text-center py-8">
+                  <Icon name="Inbox" size={48} className="mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground mb-4">Пока нет объявлений</p>
+                  <Button onClick={() => setActiveTab('create')} size="lg">
+                    <Icon name="Plus" className="mr-2" size={18} />
+                    Создать первое объявление
+                  </Button>
+                </div>
               </div>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {filteredAnnouncements.map((item) => (
-                  <AnnouncementCard
-                    key={item.id}
-                    announcement={item}
-                    currentUser={CURRENT_USER}
-                    onTrackView={handleTrackView}
-                    onOpenResponse={openResponseDialog}
-                    onOpenResponses={openResponsesDialog}
-                    formatDate={formatDate}
-                    getTypeInfo={getTypeInfo}
-                  />
-                ))}
+              <div>
+                <FilterBar 
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={setSelectedCategory}
+                  categories={CATEGORIES}
+                />
+                
+                {filteredAnnouncements.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Icon name="SearchX" size={48} className="mx-auto text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground mb-2">В категории «{CATEGORIES.find(c => c.value === selectedCategory)?.label}» нет объявлений</p>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setSelectedCategory('all')}
+                      className="mt-4"
+                    >
+                      <Icon name="Grid3x3" className="mr-2" size={16} />
+                      Показать все категории
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {filteredAnnouncements.map((item) => (
+                      <AnnouncementCard
+                        key={item.id}
+                        announcement={item}
+                        currentUser={CURRENT_USER}
+                        onTrackView={handleTrackView}
+                        onOpenResponse={openResponseDialog}
+                        onOpenResponses={openResponsesDialog}
+                        formatDate={formatDate}
+                        getTypeInfo={getTypeInfo}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </TabsContent>

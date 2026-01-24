@@ -10,7 +10,6 @@ import { Header } from '@/components/index/Header';
 import { FilterBar } from '@/components/index/FilterBar';
 import { AnnouncementCard } from '@/components/index/AnnouncementCard';
 import { CreateForm } from '@/components/index/CreateForm';
-import QRCode from 'qrcode';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 const CURRENT_USER = 'Вы';
@@ -92,13 +91,11 @@ const Index = () => {
         type: newAnnouncement.type
       });
 
-      const qrCodeDataUrl = await QRCode.toDataURL(result.ozon_card, { width: 200, margin: 1 });
-      
       setPaymentDialog({
         open: true,
         amount: result.amount,
         card: result.ozon_card,
-        qrCode: qrCodeDataUrl
+        qrCode: ''
       });
       
       setNewAnnouncement({ title: '', description: '', category: '', author_contact: '', type: 'regular' });
@@ -364,16 +361,6 @@ const Index = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="bg-secondary/50 p-6 rounded-lg text-center">
-              <div className="flex justify-center mb-3">
-                {paymentDialog.qrCode && (
-                  <img src={paymentDialog.qrCode} alt="QR код для оплаты" className="w-56 h-56" />
-                )}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Отсканируйте QR-код камерой телефона
-              </p>
-            </div>
             <div className="bg-secondary/50 p-4 rounded-lg text-center">
               <p className="text-sm font-medium mb-2">Номер карты Ozon:</p>
               <p className="text-xl font-bold tracking-wider mb-3">{paymentDialog.card}</p>

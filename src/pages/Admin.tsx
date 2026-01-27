@@ -45,7 +45,7 @@ const Admin = () => {
     try {
       const data = await announcementsApi.getStats('HELP2025');
       setStats(data);
-    } catch (error) {
+    } catch {
       // Error loading stats
     }
   };
@@ -55,7 +55,7 @@ const Admin = () => {
     try {
       const data = await announcementsApi.getAll();
       setAnnouncements(data);
-    } catch (error) {
+    } catch {
       // Error loading announcements
     } finally {
       setLoading(false);
@@ -66,7 +66,7 @@ const Admin = () => {
     try {
       const data = await donationsApi.getAll('HELP2025');
       setDonations(data);
-    } catch (error) {
+    } catch {
       // Error loading donations
     }
   };
@@ -75,7 +75,7 @@ const Admin = () => {
     try {
       const data = await celebritiesApi.getAll('HELP2025');
       setCelebrityRequests(data);
-    } catch (error) {
+    } catch {
       // Error loading celebrity requests
     }
   };

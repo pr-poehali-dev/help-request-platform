@@ -43,7 +43,7 @@ export const ChatDialog = ({ open, onOpenChange, responseId, responderName, curr
     try {
       const data = await responsesApi.getMessages(responseId);
       setMessages(data);
-    } catch (error) {
+    } catch {
       // Error loading messages
     } finally {
       setLoading(false);

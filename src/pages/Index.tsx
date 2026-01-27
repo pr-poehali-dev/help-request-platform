@@ -64,7 +64,7 @@ const Index = () => {
     try {
       const data = await announcementsApi.getAll();
       setAnnouncements(data);
-    } catch (error) {
+    } catch {
       // Error loading announcements
     } finally {
       setLoading(false);

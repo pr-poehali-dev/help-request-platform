@@ -42,7 +42,7 @@ const Charity = () => {
     try {
       const data = await donationsApi.getAll();
       setDonations(data);
-    } catch (error) {
+    } catch {
       // Error loading donations
     } finally {
       setLoading(false);

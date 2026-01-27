@@ -317,7 +317,6 @@ const Index = () => {
         onOpenChange={(open) => setResponseDialog({ open, announcementId: 0, title: '' })}
         announcementId={responseDialog.announcementId}
         announcementTitle={responseDialog.title}
-        currentUserName={CURRENT_USER}
       />
 
       <ResponsesDialog

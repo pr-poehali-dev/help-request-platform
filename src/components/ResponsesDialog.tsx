@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -26,9 +26,9 @@ export const ResponsesDialog = ({ open, onOpenChange, announcementId, announceme
     if (open && announcementId) {
       loadResponses();
     }
-  }, [open, announcementId]);
+  }, [open, announcementId, loadResponses]);
 
-  const loadResponses = async () => {
+  const loadResponses = useCallback(async () => {
     setLoading(true);
     try {
       const data = await responsesApi.getByAnnouncement(announcementId);
@@ -38,7 +38,7 @@ export const ResponsesDialog = ({ open, onOpenChange, announcementId, announceme
     } finally {
       setLoading(false);
     }
-  };
+  }, [announcementId]);
 
   const openChat = (response: Response) => {
     setSelectedResponse(response);

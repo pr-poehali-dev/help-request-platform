@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
@@ -57,9 +57,9 @@ const Index = () => {
   useEffect(() => {
     loadAnnouncements();
     announcementsApi.trackVisit();
-  }, []);
+  }, [loadAnnouncements]);
 
-  const loadAnnouncements = async () => {
+  const loadAnnouncements = useCallback(async () => {
     setLoading(true);
     try {
       const data = await announcementsApi.getAll();
@@ -69,7 +69,7 @@ const Index = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const handleCreate = async () => {
     if (!newAnnouncement.title || !newAnnouncement.description) {

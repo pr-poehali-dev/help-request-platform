@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,7 +28,7 @@ export const ChatDialog = ({ open, onOpenChange, responseId, responderName, curr
       const interval = setInterval(loadMessages, 3000);
       return () => clearInterval(interval);
     }
-  }, [open, responseId]);
+  }, [open, responseId, loadMessages]);
 
   useEffect(() => {
     scrollToBottom();
@@ -38,7 +38,7 @@ export const ChatDialog = ({ open, onOpenChange, responseId, responderName, curr
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const loadMessages = async () => {
+  const loadMessages = useCallback(async () => {
     setLoading(true);
     try {
       const data = await responsesApi.getMessages(responseId);
@@ -48,7 +48,7 @@ export const ChatDialog = ({ open, onOpenChange, responseId, responderName, curr
     } finally {
       setLoading(false);
     }
-  };
+  }, [responseId]);
 
   const handleSend = async () => {
     if (!newMessage.trim()) return;

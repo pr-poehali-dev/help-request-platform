@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,9 +35,9 @@ const Charity = () => {
         }
       });
     }
-  }, []);
+  }, [loadDonations, cardNumber]);
 
-  const loadDonations = async () => {
+  const loadDonations = useCallback(async () => {
     setLoading(true);
     try {
       const data = await donationsApi.getAll();
@@ -47,7 +47,7 @@ const Charity = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const handleSubmit = async () => {
     if (!formData.donor_name || !formData.amount) {

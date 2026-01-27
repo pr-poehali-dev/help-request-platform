@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,9 +38,9 @@ const Celebrities = () => {
         }
       });
     }
-  }, [showForm]);
+  }, [showForm, loadRequests, cardNumber]);
 
-  const loadRequests = async () => {
+  const loadRequests = useCallback(async () => {
     setLoading(true);
     try {
       const data = await celebritiesApi.getAll();
@@ -50,7 +50,7 @@ const Celebrities = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const handleSubmit = async () => {
     if (!formData.requester_name || !formData.celebrity_name || !formData.request_text) {

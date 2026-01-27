@@ -22,18 +22,6 @@ export const ChatDialog = ({ open, onOpenChange, responseId, responderName, curr
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (open && responseId) {
-      loadMessages();
-      const interval = setInterval(loadMessages, 3000);
-      return () => clearInterval(interval);
-    }
-  }, [open, responseId, loadMessages]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -49,6 +37,18 @@ export const ChatDialog = ({ open, onOpenChange, responseId, responderName, curr
       setLoading(false);
     }
   }, [responseId]);
+
+  useEffect(() => {
+    if (open && responseId) {
+      loadMessages();
+      const interval = setInterval(loadMessages, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [open, responseId, loadMessages]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSend = async () => {
     if (!newMessage.trim()) return;

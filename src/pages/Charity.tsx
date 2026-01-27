@@ -23,6 +23,18 @@ const Charity = () => {
     message: ''
   });
 
+  const loadDonations = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await donationsApi.getAll();
+      setDonations(data);
+    } catch {
+      // Error loading donations
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     loadDonations();
     if (qrCanvasRef.current) {
@@ -36,18 +48,6 @@ const Charity = () => {
       });
     }
   }, [loadDonations, cardNumber]);
-
-  const loadDonations = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await donationsApi.getAll();
-      setDonations(data);
-    } catch {
-      // Error loading donations
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   const handleSubmit = async () => {
     if (!formData.donor_name || !formData.amount) {

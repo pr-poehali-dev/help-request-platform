@@ -22,12 +22,6 @@ export const ResponsesDialog = ({ open, onOpenChange, announcementId, announceme
   const [selectedResponse, setSelectedResponse] = useState<Response | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
 
-  useEffect(() => {
-    if (open && announcementId) {
-      loadResponses();
-    }
-  }, [open, announcementId, loadResponses]);
-
   const loadResponses = useCallback(async () => {
     setLoading(true);
     try {
@@ -39,6 +33,12 @@ export const ResponsesDialog = ({ open, onOpenChange, announcementId, announceme
       setLoading(false);
     }
   }, [announcementId]);
+
+  useEffect(() => {
+    if (open && announcementId) {
+      loadResponses();
+    }
+  }, [open, announcementId, loadResponses]);
 
   const openChat = (response: Response) => {
     setSelectedResponse(response);

@@ -54,11 +54,6 @@ const Index = () => {
     qrCode: ''
   });
 
-  useEffect(() => {
-    loadAnnouncements();
-    announcementsApi.trackVisit();
-  }, [loadAnnouncements]);
-
   const loadAnnouncements = useCallback(async () => {
     setLoading(true);
     try {
@@ -70,6 +65,11 @@ const Index = () => {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    loadAnnouncements();
+    announcementsApi.trackVisit();
+  }, [loadAnnouncements]);
 
   const handleCreate = async () => {
     if (!newAnnouncement.title || !newAnnouncement.description) {

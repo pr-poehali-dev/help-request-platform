@@ -26,6 +26,18 @@ const Celebrities = () => {
     request_text: ''
   });
 
+  const loadRequests = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await celebritiesApi.getAll();
+      setRequests(data);
+    } catch {
+      // Error loading requests
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     loadRequests();
     if (qrCanvasRef.current && showForm) {
@@ -39,18 +51,6 @@ const Celebrities = () => {
       });
     }
   }, [showForm, loadRequests, cardNumber]);
-
-  const loadRequests = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await celebritiesApi.getAll();
-      setRequests(data);
-    } catch {
-      // Error loading requests
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   const handleSubmit = async () => {
     if (!formData.requester_name || !formData.celebrity_name || !formData.request_text) {

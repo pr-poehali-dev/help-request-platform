@@ -317,6 +317,7 @@ const Index = () => {
         onOpenChange={(open) => setResponseDialog({ open, announcementId: 0, title: '' })}
         announcementId={responseDialog.announcementId}
         announcementTitle={responseDialog.title}
+        currentUserName={CURRENT_USER}
       />
 
       <ResponsesDialog
@@ -325,6 +326,7 @@ const Index = () => {
         announcementId={responsesDialog.announcementId}
         announcementTitle={responsesDialog.title}
         isAuthor={responsesDialog.isAuthor}
+        currentUserName={CURRENT_USER}
       />
 
       <Dialog open={paymentDialog.open} onOpenChange={(open) => setPaymentDialog({ ...paymentDialog, open })}>

@@ -13,9 +13,10 @@ interface ResponsesDialogProps {
   announcementId: number;
   announcementTitle: string;
   isAuthor: boolean;
+  currentUserName: string;
 }
 
-export const ResponsesDialog = ({ open, onOpenChange, announcementId, announcementTitle, isAuthor }: ResponsesDialogProps) => {
+export const ResponsesDialog = ({ open, onOpenChange, announcementId, announcementTitle, isAuthor, currentUserName }: ResponsesDialogProps) => {
   const [responses, setResponses] = useState<Response[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedResponse, setSelectedResponse] = useState<Response | null>(null);
@@ -106,7 +107,7 @@ export const ResponsesDialog = ({ open, onOpenChange, announcementId, announceme
           onOpenChange={setChatOpen}
           responseId={selectedResponse.id}
           responderName={selectedResponse.responder_name}
-          currentUserName={isAuthor ? announcementTitle.split(' ')[0] : selectedResponse.responder_name}
+          currentUserName={currentUserName}
         />
       )}
     </>

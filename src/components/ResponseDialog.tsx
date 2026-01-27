@@ -12,9 +12,10 @@ interface ResponseDialogProps {
   onOpenChange: (open: boolean) => void;
   announcementId: number;
   announcementTitle: string;
+  currentUserName: string;
 }
 
-export const ResponseDialog = ({ open, onOpenChange, announcementId, announcementTitle }: ResponseDialogProps) => {
+export const ResponseDialog = ({ open, onOpenChange, announcementId, announcementTitle, currentUserName }: ResponseDialogProps) => {
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
   const [message, setMessage] = useState('');

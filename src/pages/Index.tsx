@@ -181,42 +181,19 @@ const Index = () => {
                 <p className="text-muted-foreground mt-4">Загрузка объявлений...</p>
               </div>
             ) : announcements.length === 0 ? (
-              <div>
-                <div className="grid md:grid-cols-3 gap-6 mb-12">
-                  <div className="text-center">
-                    <img 
-                      src="https://cdn.poehali.dev/projects/f66c15c0-cdb3-4fda-9fe6-00f13fa938c1/files/703811e0-d087-47e0-9833-7c035bb0079e.jpg" 
-                      alt="Взаимопомощь" 
-                      className="w-full h-48 object-cover rounded-lg mb-3"
-                    />
-                    <h3 className="font-semibold mb-2">Помогайте друг другу</h3>
-                    <p className="text-sm text-muted-foreground">Создавайте объявления и находите тех, кто готов помочь</p>
+              <div className="max-w-2xl mx-auto">
+                <div className="text-center py-12">
+                  <div className="bg-primary/10 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+                    <Icon name="Heart" size={48} className="text-primary" />
                   </div>
-                  <div className="text-center">
-                    <img 
-                      src="https://cdn.poehali.dev/projects/f66c15c0-cdb3-4fda-9fe6-00f13fa938c1/files/f27338ee-2bab-4bf7-830f-320e3853997c.jpg" 
-                      alt="Сообщество" 
-                      className="w-full h-48 object-cover rounded-lg mb-3"
-                    />
-                    <h3 className="font-semibold mb-2">Вместе мы сильнее</h3>
-                    <p className="text-sm text-muted-foreground">Станьте частью сообщества взаимопомощи</p>
-                  </div>
-                  <div className="text-center">
-                    <img 
-                      src="https://cdn.poehali.dev/projects/f66c15c0-cdb3-4fda-9fe6-00f13fa938c1/files/20aaeb96-ee0d-4a87-b0c0-3683bb91547f.jpg" 
-                      alt="Поддержка" 
-                      className="w-full h-48 object-cover rounded-lg mb-3"
-                    />
-                    <h3 className="font-semibold mb-2">Доброта рядом</h3>
-                    <p className="text-sm text-muted-foreground">Делитесь теплом и получайте поддержку</p>
-                  </div>
-                </div>
-                <div className="text-center py-8">
-                  <Icon name="Inbox" size={48} className="mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground mb-4">Пока нет объявлений</p>
-                  <Button onClick={() => setActiveTab('create')} size="lg">
-                    <Icon name="Plus" className="mr-2" size={18} />
-                    Создать первое объявление
+                  <h2 className="text-3xl font-bold mb-4">Добро пожаловать!</h2>
+                  <p className="text-lg text-muted-foreground mb-8">
+                    Здесь вы можете создать объявление о помощи или откликнуться на чужое. 
+                    Вместе мы делаем мир добрее!
+                  </p>
+                  <Button onClick={() => setActiveTab('create')} size="lg" className="gap-2">
+                    <Icon name="Plus" size={20} />
+                    Создать объявление
                   </Button>
                 </div>
               </div>
@@ -268,11 +245,12 @@ const Index = () => {
               </div>
             ) : announcements.filter(a => a.author === CURRENT_USER).length === 0 ? (
               <div className="text-center py-12">
-                <Icon name="Inbox" size={48} className="mx-auto text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-4">У вас пока нет объявлений</p>
-                <Button onClick={() => setActiveTab('create')}>
-                  <Icon name="Plus" className="mr-2" size={18} />
-                  Создать первое объявление
+                <Icon name="FileText" size={48} className="mx-auto text-muted-foreground mb-4" />
+                <p className="text-lg font-medium mb-2">У вас пока нет объявлений</p>
+                <p className="text-muted-foreground mb-6">Создайте своё первое объявление</p>
+                <Button onClick={() => setActiveTab('create')} size="lg" className="gap-2">
+                  <Icon name="Plus" size={18} />
+                  Создать объявление
                 </Button>
               </div>
             ) : (
@@ -336,14 +314,14 @@ const Index = () => {
 
       <ResponseDialog
         open={responseDialog.open}
-        onClose={() => setResponseDialog({ open: false, announcementId: 0, title: '' })}
+        onOpenChange={(open) => setResponseDialog({ open, announcementId: 0, title: '' })}
         announcementId={responseDialog.announcementId}
         announcementTitle={responseDialog.title}
       />
 
       <ResponsesDialog
         open={responsesDialog.open}
-        onClose={() => setResponsesDialog({ open: false, announcementId: 0, title: '', isAuthor: false })}
+        onOpenChange={(open) => setResponsesDialog({ open, announcementId: 0, title: '', isAuthor: false })}
         announcementId={responsesDialog.announcementId}
         announcementTitle={responsesDialog.title}
         isAuthor={responsesDialog.isAuthor}

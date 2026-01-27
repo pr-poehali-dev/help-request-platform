@@ -65,7 +65,7 @@ const Index = () => {
       const data = await announcementsApi.getAll();
       setAnnouncements(data);
     } catch (error) {
-      console.error('Failed to load announcements:', error);
+      // Error loading announcements
     } finally {
       setLoading(false);
     }

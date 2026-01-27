@@ -34,7 +34,7 @@ export const ResponsesDialog = ({ open, onOpenChange, announcementId, announceme
       const data = await responsesApi.getByAnnouncement(announcementId);
       setResponses(data);
     } catch (error) {
-      console.error('Failed to load responses:', error);
+      // Error loading responses
     } finally {
       setLoading(false);
     }

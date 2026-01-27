@@ -46,7 +46,7 @@ const Celebrities = () => {
       const data = await celebritiesApi.getAll();
       setRequests(data);
     } catch (error) {
-      console.error('Failed to load requests:', error);
+      // Error loading requests
     } finally {
       setLoading(false);
     }

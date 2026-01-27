@@ -43,7 +43,7 @@ const Charity = () => {
       const data = await donationsApi.getAll();
       setDonations(data);
     } catch (error) {
-      console.error('Failed to load donations:', error);
+      // Error loading donations
     } finally {
       setLoading(false);
     }

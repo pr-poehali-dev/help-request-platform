@@ -44,7 +44,7 @@ export const ChatDialog = ({ open, onOpenChange, responseId, responderName, curr
       const data = await responsesApi.getMessages(responseId);
       setMessages(data);
     } catch (error) {
-      console.error('Failed to load messages:', error);
+      // Error loading messages
     } finally {
       setLoading(false);
     }

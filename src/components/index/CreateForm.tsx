@@ -99,7 +99,7 @@ export const CreateForm = ({ announcement, onChange, onSubmit, categories }: Cre
                       <span className="text-2xl font-bold text-primary">10₽</span>
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Стандартное размещение в общем списке
+                      Стандартное размещение
                     </p>
                   </div>
                 </div>
@@ -119,7 +119,7 @@ export const CreateForm = ({ announcement, onChange, onSubmit, categories }: Cre
                       <span className="text-2xl font-bold text-warning">20₽</span>
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Отображается выше обычных объявлений
+                      Выше обычных объявлений
                     </p>
                   </div>
                 </div>
@@ -139,7 +139,7 @@ export const CreateForm = ({ announcement, onChange, onSubmit, categories }: Cre
                       <span className="text-2xl font-bold text-primary">100₽</span>
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Максимальная видимость, цветное выделение, показывается в самом верху
+                      Цветное выделение в самом верху
                     </p>
                   </div>
                 </div>

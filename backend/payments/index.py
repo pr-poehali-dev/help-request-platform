@@ -116,8 +116,7 @@ def handler(event: dict, context) -> dict:
                 # Генерируем QR-код для СБП
                 qr_params = {
                     'TerminalKey': terminal_key,
-                    'PaymentId': payment_id,
-                    'DataType': 'PAYLOAD'
+                    'PaymentId': str(payment_id)
                 }
                 qr_params['Token'] = calculate_token(qr_params, password)
                 
@@ -129,6 +128,10 @@ def handler(event: dict, context) -> dict:
                 
                 qr_data = qr_response.json()
                 qr_code_data = qr_data.get('Data', '')
+                
+                # Если QR не получен, используем payment_url как fallback
+                if not qr_code_data:
+                    qr_code_data = tinkoff_data.get('PaymentURL', '')
                 
                 # Сохраняем payment_id в БД
                 cursor.execute(f"""

@@ -11,6 +11,7 @@ import { FilterBar } from '@/components/index/FilterBar';
 import { AnnouncementCard } from '@/components/index/AnnouncementCard';
 import { CreateForm } from '@/components/index/CreateForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { QRCodeSVG } from 'qrcode.react';
 
 const CURRENT_USER = 'Вы';
 
@@ -94,8 +95,8 @@ const Index = () => {
       setPaymentDialog({
         open: true,
         amount: result.amount,
-        card: result.ozon_card,
-        qrCode: ''
+        card: '',
+        qrCode: result.qr_code || ''
       });
       
       setNewAnnouncement({ title: '', description: '', category: '', author_contact: '', type: 'regular' });
@@ -340,32 +341,41 @@ const Index = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
+            {paymentDialog.qrCode && (
+              <div className="bg-white p-6 rounded-lg flex justify-center">
+                <QRCodeSVG value={paymentDialog.qrCode} size={220} level="M" />
+              </div>
+            )}
             <div className="bg-secondary/50 p-4 rounded-lg text-center">
-              <p className="text-sm font-medium mb-2">Номер карты Ozon:</p>
-              <p className="text-xl font-bold tracking-wider mb-3">{paymentDialog.card}</p>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => {
-                  navigator.clipboard.writeText(paymentDialog.card);
-                  toast({ title: 'Скопировано!', description: 'Номер карты скопирован в буфер обмена' });
-                }}
-              >
-                <Icon name="Copy" className="mr-2" size={14} />
-                Скопировать номер
-              </Button>
+              <p className="text-sm font-medium mb-2">Сумма к оплате:</p>
+              <p className="text-3xl font-bold text-primary mb-2">{paymentDialog.amount}₽</p>
+              <p className="text-xs text-muted-foreground">Оплата через СБП (Тинькофф)</p>
             </div>
-            <div className="bg-warning/10 border border-warning/20 p-3 rounded-lg">
-              <p className="text-sm text-warning-foreground flex items-start gap-2">
-                <Icon name="Info" size={16} className="mt-0.5 shrink-0" />
-                <span>После проверки оплаты администратором объявление будет опубликовано</span>
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <p className="flex items-start gap-2">
+                <Icon name="Check" size={16} className="mt-0.5 shrink-0 text-primary" />
+                <span>Откройте приложение банка с поддержкой СБП</span>
+              </p>
+              <p className="flex items-start gap-2">
+                <Icon name="Check" size={16} className="mt-0.5 shrink-0 text-primary" />
+                <span>Отсканируйте QR-код камерой телефона</span>
+              </p>
+              <p className="flex items-start gap-2">
+                <Icon name="Check" size={16} className="mt-0.5 shrink-0 text-primary" />
+                <span>Подтвердите платёж в приложении</span>
+              </p>
+            </div>
+            <div className="bg-primary/10 border border-primary/20 p-3 rounded-lg">
+              <p className="text-sm flex items-start gap-2">
+                <Icon name="Sparkles" size={16} className="mt-0.5 shrink-0 text-primary" />
+                <span className="font-medium">Объявление опубликуется автоматически после оплаты!</span>
               </p>
             </div>
             <Button 
               onClick={() => setPaymentDialog({ ...paymentDialog, open: false })} 
               className="w-full"
             >
-              Понятно
+              Закрыть
             </Button>
           </div>
         </DialogContent>

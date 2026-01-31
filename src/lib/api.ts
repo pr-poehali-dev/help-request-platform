@@ -107,7 +107,8 @@ export const paymentsApi = {
     success: boolean; 
     announcement_id: number; 
     amount: number;
-    ozon_card?: string;
+    qr_code?: string;
+    payment_url?: string;
     payment_status: string;
     message?: string;
   }> {
@@ -116,7 +117,6 @@ export const paymentsApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
         action: 'create_payment', 
-        return_url: window.location.origin,
         ...data 
       })
     });

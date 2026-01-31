@@ -1,7 +1,7 @@
 {
   "tests": [
     {
-      "name": "Create payment with Ozon",
+      "name": "Create payment with Tinkoff",
       "method": "POST",
       "body": {
         "action": "create_payment",
@@ -16,8 +16,8 @@
       "expectedBody": {
         "success": true,
         "amount": 10,
-        "ozon_card": "2204321081688079",
-        "payment_status": "pending"
+        "payment_status": "pending",
+        "qr_code": "string"
       },
       "bodyMatcher": "partial"
     },

@@ -79,7 +79,7 @@ const Celebrities = () => {
 
       toast({
         title: 'Обращение создано!',
-        description: result.message || `Переведите ${result.amount}₽ на карту Ozon для публикации`,
+        description: result.message || `Переведите ${result.amount}₽ на карту Т-Банк для публикации`,
         duration: 10000
       });
 
@@ -251,7 +251,7 @@ const Celebrities = () => {
                     <div className="flex items-center gap-3">
                       <Icon name="CreditCard" size={28} className="text-primary" />
                       <div>
-                        <div className="text-sm font-semibold">Карта Ozon:</div>
+                        <div className="text-sm font-semibold">Карта Т-Банк:</div>
                         <div className="text-xl font-mono text-primary">2204 3210 8168 8079</div>
                       </div>
                     </div>

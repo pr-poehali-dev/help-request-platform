@@ -204,7 +204,7 @@ const Charity = () => {
                     <div className="flex items-center gap-3">
                       <Icon name="CreditCard" size={28} className="text-primary" />
                       <div>
-                        <div className="text-sm font-semibold">Карта Ozon:</div>
+                        <div className="text-sm font-semibold">Карта Т-Банк:</div>
                         <div className="text-xl font-mono text-primary">2204 3210 8168 8079</div>
                       </div>
                     </div>

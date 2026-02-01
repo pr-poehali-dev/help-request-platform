@@ -40,17 +40,24 @@ const Celebrities = () => {
 
   useEffect(() => {
     loadRequests();
-    if (qrCanvasRef.current && showForm) {
-      QRCode.toCanvas(qrCanvasRef.current, cardNumber, {
-        width: 180,
-        margin: 2,
-        color: {
-          dark: '#000000',
-          light: '#FFFFFF'
+  }, [loadRequests]);
+
+  useEffect(() => {
+    if (showForm && qrCanvasRef.current) {
+      setTimeout(() => {
+        if (qrCanvasRef.current) {
+          QRCode.toCanvas(qrCanvasRef.current, cardNumber, {
+            width: 180,
+            margin: 2,
+            color: {
+              dark: '#000000',
+              light: '#FFFFFF'
+            }
+          });
         }
-      });
+      }, 100);
     }
-  }, [showForm, loadRequests, cardNumber]);
+  }, [showForm, cardNumber]);
 
   const handleSubmit = async () => {
     if (!formData.requester_name || !formData.celebrity_name || !formData.request_text) {

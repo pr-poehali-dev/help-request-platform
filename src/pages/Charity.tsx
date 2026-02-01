@@ -37,17 +37,24 @@ const Charity = () => {
 
   useEffect(() => {
     loadDonations();
-    if (qrCanvasRef.current) {
-      QRCode.toCanvas(qrCanvasRef.current, cardNumber, {
-        width: 180,
-        margin: 2,
-        color: {
-          dark: '#000000',
-          light: '#FFFFFF'
+  }, [loadDonations]);
+
+  useEffect(() => {
+    if (showForm && qrCanvasRef.current) {
+      setTimeout(() => {
+        if (qrCanvasRef.current) {
+          QRCode.toCanvas(qrCanvasRef.current, cardNumber, {
+            width: 180,
+            margin: 2,
+            color: {
+              dark: '#000000',
+              light: '#FFFFFF'
+            }
+          });
         }
-      });
+      }, 100);
     }
-  }, [loadDonations, cardNumber]);
+  }, [showForm, cardNumber]);
 
   const handleSubmit = async () => {
     if (!formData.donor_name || !formData.amount) {

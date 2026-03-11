@@ -14,7 +14,7 @@ import QRCode from 'qrcode';
 const Celebrities = () => {
   const navigate = useNavigate();
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
-  const cardNumber = '2204321081688079';
+  const sbpUrl = 'https://www.tbank.ru/rm/r/89099957740';
   const [requests, setRequests] = useState<CelebrityRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -46,7 +46,7 @@ const Celebrities = () => {
     if (showForm && qrCanvasRef.current) {
       setTimeout(() => {
         if (qrCanvasRef.current) {
-          QRCode.toCanvas(qrCanvasRef.current, cardNumber, {
+          QRCode.toCanvas(qrCanvasRef.current, sbpUrl, {
             width: 180,
             margin: 2,
             color: {
@@ -57,7 +57,7 @@ const Celebrities = () => {
         }
       }, 100);
     }
-  }, [showForm, cardNumber]);
+  }, [showForm]);
 
   const handleSubmit = async () => {
     if (!formData.requester_name || !formData.celebrity_name || !formData.request_text) {
@@ -167,7 +167,7 @@ const Celebrities = () => {
                       onClick={() => setFormData({ ...formData, celebrity_name: celeb.name })}
                       className="justify-start"
                     >
-                      <Icon name={celeb.icon as any} size={16} className="mr-2" />
+                      <Icon name={celeb.icon} size={16} className="mr-2" />
                       <div className="text-left">
                         <div className="font-medium">{celeb.name}</div>
                         <div className="text-xs opacity-70">{celeb.category}</div>

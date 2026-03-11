@@ -8,11 +8,11 @@ import QRCode from 'qrcode';
 const PaymentGuide = () => {
   const navigate = useNavigate();
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
-  const cardNumber = '2204321081688079';
+  const sbpUrl = 'https://www.tbank.ru/rm/r/89099957740';
 
   useEffect(() => {
     if (qrCanvasRef.current) {
-      QRCode.toCanvas(qrCanvasRef.current, cardNumber, {
+      QRCode.toCanvas(qrCanvasRef.current, sbpUrl, {
         width: 200,
         margin: 2,
         color: {

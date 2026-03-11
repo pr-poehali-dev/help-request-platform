@@ -113,10 +113,11 @@ def handler(event: dict, context) -> dict:
                 
                 payment_id = tinkoff_data.get('PaymentId')
                 
-                # Генерируем QR-код для СБП
+                # Генерируем QR-код для СБП (DYNAMIC = настоящий СБП QR)
                 qr_params = {
                     'TerminalKey': terminal_key,
-                    'PaymentId': str(payment_id)
+                    'PaymentId': str(payment_id),
+                    'DataType': 'DYNAMIC'
                 }
                 qr_params['Token'] = calculate_token(qr_params, password)
                 
@@ -127,10 +128,12 @@ def handler(event: dict, context) -> dict:
                 )
                 
                 qr_data = qr_response.json()
+                print(f"GetQr response: {qr_data}")
                 qr_code_data = qr_data.get('Data', '')
                 
-                # Если QR не получен, используем payment_url как fallback
+                # Если СБП QR не получен — используем PaymentURL
                 if not qr_code_data:
+                    print(f"GetQr failed, fallback to PaymentURL. Error: {qr_data.get('Message', '')}")
                     qr_code_data = tinkoff_data.get('PaymentURL', '')
                 
                 # Сохраняем payment_id в БД
@@ -245,6 +248,73 @@ def handler(event: dict, context) -> dict:
                     'isBase64Encoded': False
                 }
             
+            elif action == 'generate_sbp_qr':
+                # Генерация СБП QR для пожертвований и обращений к знаменитостям
+                amount = body.get('amount', 100)
+                description = body.get('description', 'Оплата')
+                amount_kopecks = int(amount) * 100
+                
+                terminal_key = os.environ.get('TINKOFF_TERMINAL_KEY', '')
+                password = os.environ.get('TINKOFF_PASSWORD', '')
+                
+                import time
+                order_id = f'sbp_{int(time.time())}'
+                
+                init_params = {
+                    'TerminalKey': terminal_key,
+                    'Amount': amount_kopecks,
+                    'OrderId': order_id,
+                    'Description': description[:140]
+                }
+                init_params['Token'] = calculate_token(init_params, password)
+                
+                init_response = requests.post(
+                    'https://securepay.tinkoff.ru/v2/Init',
+                    json=init_params,
+                    timeout=10
+                )
+                init_data = init_response.json()
+                print(f"Init response: {init_data}")
+                
+                if not init_data.get('Success'):
+                    return {
+                        'statusCode': 400,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': init_data.get('Message', 'Ошибка создания платежа')}),
+                        'isBase64Encoded': False
+                    }
+                
+                payment_id = init_data.get('PaymentId')
+                
+                qr_params = {
+                    'TerminalKey': terminal_key,
+                    'PaymentId': str(payment_id),
+                    'DataType': 'DYNAMIC'
+                }
+                qr_params['Token'] = calculate_token(qr_params, password)
+                
+                qr_response = requests.post(
+                    'https://securepay.tinkoff.ru/v2/GetQr',
+                    json=qr_params,
+                    timeout=10
+                )
+                qr_data = qr_response.json()
+                print(f"GetQr response: {qr_data}")
+                
+                qr_code_data = qr_data.get('Data', '') or init_data.get('PaymentURL', '')
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({
+                        'success': True,
+                        'qr_code': qr_code_data,
+                        'payment_id': payment_id,
+                        'amount': amount
+                    }),
+                    'isBase64Encoded': False
+                }
+
             elif action == 'confirm_payment':
                 announcement_id = body.get('announcement_id')
                 admin_code = body.get('admin_code', '')

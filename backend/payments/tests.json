@@ -22,18 +22,17 @@
       "bodyMatcher": "partial"
     },
     {
-      "name": "Create VIP announcement",
+      "name": "Generate SBP QR",
       "method": "POST",
       "body": {
-        "action": "create_payment",
-        "title": "VIP announcement",
-        "description": "VIP description",
-        "type": "vip"
+        "action": "generate_sbp_qr",
+        "amount": 100,
+        "description": "Тест СБП QR"
       },
       "expectedStatus": 200,
       "expectedBody": {
         "success": true,
-        "amount": 100
+        "qr_code": "string"
       },
       "bodyMatcher": "partial"
     }

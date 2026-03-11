@@ -2,25 +2,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useRef } from 'react';
-import QRCode from 'qrcode';
+import { useState, useEffect } from 'react';
+import { paymentsApi } from '@/lib/api';
 
 const PaymentGuide = () => {
   const navigate = useNavigate();
-  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
-  const sbpUrl = 'https://www.tbank.ru/rm/r/89099957740?amount=10';
+  const [qrCode, setQrCode] = useState('');
 
   useEffect(() => {
-    if (qrCanvasRef.current) {
-      QRCode.toCanvas(qrCanvasRef.current, sbpUrl, {
-        width: 200,
-        margin: 2,
-        color: {
-          dark: '#000000',
-          light: '#FFFFFF'
-        }
-      });
-    }
+    paymentsApi.generateSbpQr(10, 'Размещение объявления')
+      .then(result => setQrCode(result.qr_code))
+      .catch(() => setQrCode(''));
   }, []);
 
   return (
@@ -186,8 +178,11 @@ const PaymentGuide = () => {
                     </div>
                   </div>
                   <div className="flex flex-col items-center justify-center">
-                    <div className="text-sm font-medium mb-2">Отсканируйте QR-код:</div>
-                    <canvas ref={qrCanvasRef} className="border-2 border-primary/20 rounded-lg" />
+                    <div className="text-sm font-medium mb-2">Отсканируйте QR-код СБП:</div>
+                    {qrCode
+                      ? <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrCode)}`} alt="СБП QR" className="border-2 border-primary/20 rounded-lg" width={200} height={200} />
+                      : <div className="w-[200px] h-[200px] flex items-center justify-center border-2 border-primary/20 rounded-lg text-muted-foreground text-sm">Загрузка QR...</div>
+                    }
                   </div>
                 </div>
               </div>

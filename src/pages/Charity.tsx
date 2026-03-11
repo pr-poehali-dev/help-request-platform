@@ -1,21 +1,20 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import Icon from '@/components/ui/icon';
 import { toast } from '@/hooks/use-toast';
-import { donationsApi, type Donation } from '@/lib/api';
+import { donationsApi, paymentsApi, type Donation } from '@/lib/api';
 import { useNavigate } from 'react-router-dom';
-import QRCode from 'qrcode';
 
 const Charity = () => {
   const navigate = useNavigate();
-  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
-  const phone = '89099957740';
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [qrCode, setQrCode] = useState('');
+  const [qrLoading, setQrLoading] = useState(false);
   const [formData, setFormData] = useState({
     donor_name: '',
     donor_contact: '',
@@ -40,25 +39,22 @@ const Charity = () => {
   }, [loadDonations]);
 
   useEffect(() => {
-    if (showForm && qrCanvasRef.current) {
-      setTimeout(() => {
-        if (qrCanvasRef.current) {
-          const amount = parseInt(formData.amount) || 0;
-          const sbpUrl = amount > 0
-            ? `https://www.tbank.ru/rm/r/${phone}?amount=${amount}`
-            : `https://www.tbank.ru/rm/r/${phone}`;
-          QRCode.toCanvas(qrCanvasRef.current, sbpUrl, {
-            width: 180,
-            margin: 2,
-            color: {
-              dark: '#000000',
-              light: '#FFFFFF'
-            }
-          });
-        }
-      }, 100);
-    }
-  }, [showForm, formData.amount, phone]);
+    if (!showForm) return;
+    const amount = parseInt(formData.amount) || 0;
+    if (amount < 1) { setQrCode(''); return; }
+    const timer = setTimeout(async () => {
+      setQrLoading(true);
+      try {
+        const result = await paymentsApi.generateSbpQr(amount, 'Пожертвование');
+        setQrCode(result.qr_code);
+      } catch {
+        setQrCode('');
+      } finally {
+        setQrLoading(false);
+      }
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [showForm, formData.amount]);
 
   const handleSubmit = async () => {
     if (!formData.donor_name || !formData.amount) {
@@ -213,8 +209,10 @@ const Charity = () => {
                       </div>
                     </div>
                     <div className="flex flex-col items-center justify-center">
-                      <div className="text-xs font-medium mb-2">Отсканируйте QR-код:</div>
-                      <canvas ref={qrCanvasRef} className="border-2 border-primary/20 rounded-lg" />
+                      <div className="text-xs font-medium mb-2">Отсканируйте QR-код СБП:</div>
+                      {qrLoading && <div className="w-[180px] h-[180px] flex items-center justify-center border-2 border-primary/20 rounded-lg text-muted-foreground text-sm">Генерация...</div>}
+                      {!qrLoading && qrCode && <img src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrCode)}`} alt="СБП QR" className="border-2 border-primary/20 rounded-lg" width={180} height={180} />}
+                      {!qrLoading && !qrCode && <div className="w-[180px] h-[180px] flex items-center justify-center border-2 border-dashed border-primary/20 rounded-lg text-muted-foreground text-sm text-center p-2">Введите сумму для генерации QR</div>}
                     </div>
                   </div>
                 </CardContent>

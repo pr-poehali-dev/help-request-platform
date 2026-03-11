@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,18 +6,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { toast } from '@/hooks/use-toast';
-import { celebritiesApi, type CelebrityRequest } from '@/lib/api';
+import { celebritiesApi, paymentsApi, type CelebrityRequest } from '@/lib/api';
 import { useNavigate } from 'react-router-dom';
 import { CELEBRITIES, POPULAR_CELEBRITIES } from '@/data/celebrities';
-import QRCode from 'qrcode';
 
 const Celebrities = () => {
   const navigate = useNavigate();
-  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
-  const phone = '89099957740';
   const [requests, setRequests] = useState<CelebrityRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [qrCode, setQrCode] = useState('');
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [formData, setFormData] = useState({
@@ -44,24 +42,12 @@ const Celebrities = () => {
   }, [loadRequests]);
 
   useEffect(() => {
-    if (showForm && qrCanvasRef.current) {
-      setTimeout(() => {
-        if (qrCanvasRef.current) {
-          const sbpUrl = paymentAmount > 0
-            ? `https://www.tbank.ru/rm/r/${phone}?amount=${paymentAmount}`
-            : `https://www.tbank.ru/rm/r/${phone}`;
-          QRCode.toCanvas(qrCanvasRef.current, sbpUrl, {
-            width: 180,
-            margin: 2,
-            color: {
-              dark: '#000000',
-              light: '#FFFFFF'
-            }
-          });
-        }
-      }, 100);
-    }
-  }, [showForm, paymentAmount, phone]);
+    if (!showForm) return;
+    const amount = paymentAmount || 60;
+    paymentsApi.generateSbpQr(amount, 'Обращение к знаменитости')
+      .then(result => setQrCode(result.qr_code))
+      .catch(() => setQrCode(''));
+  }, [showForm, paymentAmount]);
 
   const handleSubmit = async () => {
     if (!formData.requester_name || !formData.celebrity_name || !formData.request_text) {
@@ -262,8 +248,11 @@ const Celebrities = () => {
                       </div>
                     </div>
                     <div className="flex flex-col items-center justify-center">
-                      <div className="text-xs font-medium mb-2">Отсканируйте QR-код:</div>
-                      <canvas ref={qrCanvasRef} className="border-2 border-primary/20 rounded-lg" />
+                      <div className="text-xs font-medium mb-2">Отсканируйте QR-код СБП:</div>
+                      {qrCode
+                        ? <img src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrCode)}`} alt="СБП QR" className="border-2 border-primary/20 rounded-lg" width={180} height={180} />
+                        : <div className="w-[180px] h-[180px] flex items-center justify-center border-2 border-primary/20 rounded-lg text-muted-foreground text-sm">Загрузка QR...</div>
+                      }
                     </div>
                   </div>
                 </CardContent>

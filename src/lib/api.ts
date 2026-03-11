@@ -150,6 +150,16 @@ export const paymentsApi = {
     });
     if (!response.ok) throw new Error('Failed to confirm payment');
     return response.json();
+  },
+
+  async generateSbpQr(amount: number, description: string): Promise<{ success: boolean; qr_code: string; payment_id: string }> {
+    const response = await fetch(API_URLS.payments, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'generate_sbp_qr', amount, description })
+    });
+    if (!response.ok) throw new Error('Failed to generate QR');
+    return response.json();
   }
 };
 

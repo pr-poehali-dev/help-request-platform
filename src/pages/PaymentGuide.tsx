@@ -8,7 +8,7 @@ import QRCode from 'qrcode';
 const PaymentGuide = () => {
   const navigate = useNavigate();
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
-  const sbpUrl = 'https://www.tbank.ru/rm/r/89099957740';
+  const sbpUrl = 'https://www.tbank.ru/rm/r/89099957740?amount=10';
 
   useEffect(() => {
     if (qrCanvasRef.current) {

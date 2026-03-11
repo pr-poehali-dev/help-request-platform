@@ -14,10 +14,11 @@ import QRCode from 'qrcode';
 const Celebrities = () => {
   const navigate = useNavigate();
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
-  const sbpUrl = 'https://www.tbank.ru/rm/r/89099957740';
+  const phone = '89099957740';
   const [requests, setRequests] = useState<CelebrityRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [formData, setFormData] = useState({
     requester_name: '',
@@ -46,6 +47,9 @@ const Celebrities = () => {
     if (showForm && qrCanvasRef.current) {
       setTimeout(() => {
         if (qrCanvasRef.current) {
+          const sbpUrl = paymentAmount > 0
+            ? `https://www.tbank.ru/rm/r/${phone}?amount=${paymentAmount}`
+            : `https://www.tbank.ru/rm/r/${phone}`;
           QRCode.toCanvas(qrCanvasRef.current, sbpUrl, {
             width: 180,
             margin: 2,
@@ -57,7 +61,7 @@ const Celebrities = () => {
         }
       }, 100);
     }
-  }, [showForm]);
+  }, [showForm, paymentAmount, phone]);
 
   const handleSubmit = async () => {
     if (!formData.requester_name || !formData.celebrity_name || !formData.request_text) {
@@ -76,6 +80,8 @@ const Celebrities = () => {
         celebrity_name: formData.celebrity_name,
         request_text: formData.request_text
       });
+
+      if (result.amount) setPaymentAmount(result.amount);
 
       toast({
         title: 'Обращение создано!',

@@ -12,7 +12,7 @@ import QRCode from 'qrcode';
 const Charity = () => {
   const navigate = useNavigate();
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
-  const sbpUrl = 'https://www.tbank.ru/rm/r/89099957740';
+  const phone = '89099957740';
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -43,6 +43,10 @@ const Charity = () => {
     if (showForm && qrCanvasRef.current) {
       setTimeout(() => {
         if (qrCanvasRef.current) {
+          const amount = parseInt(formData.amount) || 0;
+          const sbpUrl = amount > 0
+            ? `https://www.tbank.ru/rm/r/${phone}?amount=${amount}`
+            : `https://www.tbank.ru/rm/r/${phone}`;
           QRCode.toCanvas(qrCanvasRef.current, sbpUrl, {
             width: 180,
             margin: 2,
@@ -54,7 +58,7 @@ const Charity = () => {
         }
       }, 100);
     }
-  }, [showForm, cardNumber]);
+  }, [showForm, formData.amount, phone]);
 
   const handleSubmit = async () => {
     if (!formData.donor_name || !formData.amount) {
